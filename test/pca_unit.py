@@ -25,6 +25,7 @@ if __name__ == "__main__":
   feature = comp_dim(data)
 
   plt.scatter(feature[:,0],feature[:,1],feature[:,2],c=list(label))
+  #for 2D
   #plt.scatter(feature[:,0],feature[:,1],c=list(label))
   plt.grid()
   plt.show()

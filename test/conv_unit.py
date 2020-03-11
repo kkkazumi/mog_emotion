@@ -1,3 +1,4 @@
+from sklearn.decomposition import PCA
 import optuna
 
 import keras.backend as K
@@ -7,6 +8,7 @@ from keras.layers.advanced_activations import LeakyReLU
 import numpy as np
 import scipy as sp
 from scipy.stats import pearsonr
+
 
 #name list must be int number
 name_list = [1]
