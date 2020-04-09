@@ -1,11 +1,16 @@
 import numpy as np
 
-out_thre = 2.0
+out_thre = .2
+
+MIN_COL = 8
+SEC_COL = 9
+MSEC_COL = 10
 
 
 class Mog_check:
     def __init__(self, data, window_size):
-        self.data = data
+        self.data = data[:,:7]
+        print(self.data.shape)
         #self.window =
         self.win_size = window_size
         self.state = np.zeros((1,7))
@@ -13,7 +18,7 @@ class Mog_check:
         self.i = 0
 
     def get_data(self):
-        self.window = data[self.i:self.i+self.win_size]
+        self.window = self.data[self.i:self.i+self.win_size]
         self.i = self.i + 1
 
     def out_height(self):
@@ -21,8 +26,11 @@ class Mog_check:
         return np.mean(self.window,axis=0)
 
     def push_history(self):
-        self.history = np.append(self.history,self.state,axis=0)
-        print(self.history,self.state)
+        if(self.i==1):
+          self.history = self.state
+        else:
+          self.history = np.append(self.history,self.state,axis=0)
+        print("history",self.i,self.history,self.state)
 
     def out_state(self):
         print("True: height > threshold")
@@ -35,13 +43,14 @@ class Mog_check:
         return rate
 
 if __name__ == '__main__':
-    data = np.loadtxt('test2.csv',delimiter=",")
+    data = np.loadtxt('test_ad_all.csv',delimiter=",")
+    #data = np.loadtxt('test2.csv',delimiter=",")
     winsize = 4
     i=0
     mogura = Mog_check(data,winsize)
     while(i<data.shape[0]):
         print(i,mogura.out_state())
         print(mogura.push_history())
-        raw_input()
+        #raw_input()
 
         i=i+1
