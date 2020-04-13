@@ -50,15 +50,24 @@ class Mog_check:
         self.push_history()
         return self.state
 
-    def time_of_popnsink(self,time,mole_num,popnsink_flg):
-        t_min, t_sec, t_msec = time
-        if(np.where(self.state_change_history[:,1]==mole_num)):
-          if(np.where(self.state_change_history[:,0]==popsink_flg)):
-            target_i = np.max(np.where((self.state_change_history[:,1]==mole_num)&(self.state_change_history[:,0]==popsink_flg)))
-            change_time = self.state_change_history([target_i,-TIME_COL_LEN:])
-            ret_time = time - change_time
+    def time_of_popnsink(self,ref_time,mole_num,popnsink_flg):
+        if(len(self.state_change_history)>1):
+          if(np.where(self.state_change_history[:,1]==mole_num)):
+            if(np.where(self.state_change_history[:,0]==popnsink_flg)):
+              target_i = np.max(np.where((self.state_change_history[:,1]==mole_num)&(self.state_change_history[:,0]==popnsink_flg)))
+              change_time = self.state_change_history[target_i,-TIME_COL_LEN:]
+              ret_time = ref_time - change_time
+
+            else:
+              ret_time = None
+          else:
+            ret_time = None
         else:
           ret_time = None
+
+        print("rettime",ret_time)
+        input()
+
         return ret_time
         
 
@@ -90,8 +99,13 @@ if __name__ == '__main__':
     winsize = 100
     i=0
     mogura = Mog_check(data,winsize)
+    test = np.array([[5000,SINK_DOWN,2,37,29,1900],[80000,POP_UP,2,37,42,1000]])
+    j=0
     while(i<data.shape[0]):
         print("mogura out state",i,mogura.out_state())
         mogura.check_state_diff()
+        if(i==test[j,0]):
+          print(mogura.time_of_popnsink(test[j,-3:],test[j,2],test[j,1]))
+          j+=1
 
         i=i+1
