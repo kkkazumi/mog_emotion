@@ -60,24 +60,14 @@ class Mog_check:
           now = self.history[-1]
           pre = self.history[-2]
           state_change[0,:] = now - pre
-          #if(self.i==4):
-          #  self.state_change_hisotry=state_change 
-          #else:
 
           for check_diff in [-1,1]:
             if(np.any(state_change==check_diff)):
               if(len(np.where(state_change==check_diff)[0])==1):
-                change_log[0,:] = np.hstack((np.array([check_diff,np.where(state_change==check_diff)[1][0]]),self.data[self.i,-3:]))
+                change_log[0,:] = np.hstack((np.array([check_diff,np.where(state_change==check_diff)[1][0]]),self.time_data[self.i,-3:]))
 
               self.state_change_history=np.append(self.state_change_history,change_log,axis=0)
               print("change history check",self.state_change_history.shape,self.state_change_history[-1])
-              input()
-            #time_data = self.data[i,-3]
-            #self.popnsink = np.apend(self.popnsink,np.array([1,i,self.min,self.sec,self.msec]),axis=0)
-        else:
-          print("")
-
-        
         
 
     def out_rate(self):
@@ -93,6 +83,5 @@ if __name__ == '__main__':
     while(i<data.shape[0]):
         print("mogura out state",i,mogura.out_state())
         mogura.check_state_diff()
-        #raw_input()
 
         i=i+1
