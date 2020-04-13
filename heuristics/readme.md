@@ -8,7 +8,17 @@
   - 全モグラの出てる割合を出力
   - 各モグラの各履歴：上がってる時間、下がってる時間
 
-    - def check_state_diff(self):
+    - check_state_diff(self):
+
+      - もぐらの状態（閾値を越えたか否か）の変化から、もぐらの状態変化をチェックしself.state_change_historyに保存します。
+      - 形式は、（上がったか下がったか、状態変化したもぐらの番号、状態変化した時刻（現地時刻のタイムスタンプ分、秒、マイクロ秒）
+
+    - time_of_popnsink(self,time,mole_num,popnsink_flg):
+
+      - 直近でもぐらが穴から出た・穴にもぐった時刻から経過した時間を返します。
+      - time: 経過時間を計算する基準となる時刻（例：叩いた時刻等）
+      - mole_num: 対象とするもぐら番号
+      - popnsink_flg: 対象とするモグラ動作（例：沈んでからの時刻を知りたい場合は、−1）
 
 # hammer_checker.py
 
