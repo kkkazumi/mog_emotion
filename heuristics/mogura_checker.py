@@ -6,6 +6,9 @@ out_thre = 0.2
 DATA_COL_LEN = 7
 TIME_COL_LEN = 3
 
+POP_UP = 1
+SINK_DOWN = -1
+
 #may not necessary
 #MIN_COL = 8
 #SEC_COL = 9
@@ -16,7 +19,7 @@ class Mog_check:
     def __init__(self, data, window_size):
         self.data = data[:,:DATA_COL_LEN]
         #self.data = np.hstack((data[:,:DATA_COL_LEN],data[:,-3:])
-        self.time_data = data[:,-3:]
+        self.time_data = data[:,-TIME_COL_LEN:]
 
         self.win_size = window_size
         self.state = np.zeros((1,DATA_COL_LEN))
@@ -47,12 +50,12 @@ class Mog_check:
         self.push_history()
         return self.state
 
-    def get_popnsink(self,que):
+    def time_of_popnsink(self,que,time):
         print("")
+        return time
         
 
     def check_state_diff(self):
-        #print("history check",self.i,self.history)
         state_change= np.zeros((1,DATA_COL_LEN))
         change_log= np.zeros((1,2+TIME_COL_LEN))
 
@@ -61,10 +64,10 @@ class Mog_check:
           pre = self.history[-2]
           state_change[0,:] = now - pre
 
-          for check_diff in [-1,1]:
+          for check_diff in [SINK_DOWN,POP_UP]:
             if(np.any(state_change==check_diff)):
               if(len(np.where(state_change==check_diff)[0])==1):
-                change_log[0,:] = np.hstack((np.array([check_diff,np.where(state_change==check_diff)[1][0]]),self.time_data[self.i,-3:]))
+                change_log[0,:] = np.hstack((np.array([check_diff,np.where(state_change==check_diff)[1][0]]),self.time_data[self.i,-TIME_COL_LEN:]))
 
               self.state_change_history=np.append(self.state_change_history,change_log,axis=0)
               print("change history check",self.state_change_history.shape,self.state_change_history[-1])
