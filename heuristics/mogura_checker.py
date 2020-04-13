@@ -50,9 +50,16 @@ class Mog_check:
         self.push_history()
         return self.state
 
-    def time_of_popnsink(self,que,time):
-        print("")
-        return time
+    def time_of_popnsink(self,time,mole_num,popnsink_flg):
+        t_min, t_sec, t_msec = time
+        if(np.where(self.state_change_history[:,1]==mole_num)):
+          if(np.where(self.state_change_history[:,0]==popsink_flg)):
+            target_i = np.max(np.where((self.state_change_history[:,1]==mole_num)&(self.state_change_history[:,0]==popsink_flg)))
+            change_time = self.state_change_history([target_i,-TIME_COL_LEN:])
+            ret_time = time - change_time
+        else:
+          ret_time = None
+        return ret_time
         
 
     def check_state_diff(self):
