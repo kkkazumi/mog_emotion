@@ -21,7 +21,7 @@ class Mog_check:
         self.win_size = window_size
         self.state = np.zeros((1,DATA_COL_LEN))
         self.history = np.empty((1,DATA_COL_LEN))
-        self.state_change_history= np.empty((1,DATA_COL_LEN))
+        self.state_change_history= np.empty((1,2+TIME_COL_LEN))
         #self.state_change= np.zeros((1,DATA_COL_LEN))
         self.i = 0
 
@@ -63,19 +63,14 @@ class Mog_check:
           #if(self.i==4):
           #  self.state_change_hisotry=state_change 
           #else:
-          #  self.state_change_history=np.append(self.state_change_history,state_change,axis=0)
-          if(np.any(state_change==1)):
-            print("len of np.where array==1,",len(np.where(state_change==1)[0]))
-            if(len(np.where(state_change==1)[0])==1):
-            #if(len(change_check[0]))
-            
-            #num = np.where(state)
 
-              print("statecheck",state_change)
-              print("np.where chec,",np.where(state_change==1)[1][0])
-              print([1,np.where(state_change==1)[1][0],self.data[self.i,-3:]])
-              change_log[0,:] = np.hstack((np.array([1,np.where(state_change==1)[1][0]]),self.data[self.i,-3:]))
-              print("state",change_log)
+          for check_diff in [-1,1]:
+            if(np.any(state_change==check_diff)):
+              if(len(np.where(state_change==check_diff)[0])==1):
+                change_log[0,:] = np.hstack((np.array([check_diff,np.where(state_change==check_diff)[1][0]]),self.data[self.i,-3:]))
+
+              self.state_change_history=np.append(self.state_change_history,change_log,axis=0)
+              print("change history check",self.state_change_history.shape,self.state_change_history[-1])
               input()
             #time_data = self.data[i,-3]
             #self.popnsink = np.apend(self.popnsink,np.array([1,i,self.min,self.sec,self.msec]),axis=0)
