@@ -24,8 +24,13 @@
 
 - ハンマーチェッカー
 
-  - 叩いたか否か
-  - 前叩きからの時間
+  - hit_checker()
+
+    - 叩いたか否か
+
+  - time_of_hit()
+
+    - 前叩きからの時間
 
 # viewpoint_checker.py
 
