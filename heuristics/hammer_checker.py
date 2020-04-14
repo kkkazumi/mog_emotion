@@ -44,6 +44,15 @@ class Hammer_check:
     self.plt_array_diff[:,-1]=self.data[self.i,CHECK_COL]-self.data[self.i-1,CHECK_COL]
     self.i+=1
 
+  def time_of_hit(self,ref_time):
+    if(len(self.hit_history)>1):
+      last_hit_time = self.hit_history[-1,:]
+      ret_time = ref_time - last_hit_time
+      print("time check",ret_time)
+    else:
+      ret_time = None
+    return ret_time
+
   def hit_checker(self):
     if abs(self.plt_array_diff[1,-1]) > 1.5:
       if abs(self.i-self.hit_t)>300:
@@ -52,26 +61,19 @@ class Hammer_check:
         hit_time[:,0]=self.data[self.i,TIME_COL]
         hit_time[:,1]=self.data[self.i,TIME_COL+1]
         hit_time[:,2]=self.data[self.i,TIME_COL+2]
+        #self.time_of_hit(hit_time) #for debug
         if(self.hit_t==0):
           self.hit_history = hit_time
         else:
           self.hit_history = np.append(self.hit_history,hit_time,axis=0)
         print("hit time_check:",self.i,hit_time,"hit_t",self.hit_t)
         self.hit_t = self.i #hit_t; last hit time
-        hit_time = datetime.datetime(year=2019,month=11,day=1,minute=int(self.data[self.i,TIME_COL]),second=int(self.data[self.i,TIME_COL+1]),microsecond=int(self.data[self.i,TIME_COL+2]))
+        #hit_time = datetime.datetime(year=2019,month=11,day=1,minute=int(self.data[self.i,TIME_COL]),second=int(self.data[self.i,TIME_COL+1]),microsecond=int(self.data[self.i,TIME_COL+2]))
       else:
         hit_time = None
     else:
       hit_time = None
     return hit_time
-
-  def time_of_hit(self,ref_time):
-    if(len(self.hit_history)>1):
-      change_time = self.hit_history[-1,:]
-        ret_time = ref_time - change_time
-    else:
-      ret_time = None
-    return ret_time
 
   def main(self):
 
