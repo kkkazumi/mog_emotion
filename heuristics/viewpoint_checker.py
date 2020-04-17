@@ -9,13 +9,18 @@ TIME_COL_LEN = 3
 class Dir_check: 
   def __init__(self, data, window_size):
     self.data = data[:,:DATA_COL_LEN]
+    self.conf_data= np.hstack((data[:,DATA_COL_LEN:DATA_COL_LEN+3]/100.0,data[:,DATA_COL_LEN:DATA_COL_LEN+3]/100.0))
     self.time_data = data[:,-TIME_COL_LEN:]
     self.win_size = window_size
     self.i = 0
 
   def get_data(self):
     self.i = self.i + 1
-    return np.mean(self.data[self.i:self.i+self.win_size,:],axis=0)
+    _data = self.data[self.i:self.i+self.win_size,:]
+    _conf = self.conf_data[self.i:self.i+self.win_size]
+    ret = _data[np.where(_conf is not 0)]*_conf[np.where(_conf is not 0)]
+    #return np.mean(self.data[self.i:self.i+self.win_size,:]*self.conf_data[self.i:self.i+self.win_size],axis=0)
+    return np.mean(ret,axis=0)
 
   def push_history(self):
     data = np.zeros((1,DATA_COL_LEN))
@@ -42,7 +47,10 @@ class Dir_check:
         plt.clf()
 
 if __name__ == '__main__':
-  data = np.loadtxt('gaze_test.csv',delimiter=",")
+  gaze_data = np.loadtxt('gaze_test.csv',delimiter=",")
+  conf_data = np.loadtxt('gazeconf_test.csv',delimiter=",")
+  #print(gaze_data[:,:DATA_COL_LEN].shape,conf_data[:,:DATA_COL_LEN].shape,gaze_data[:,-TIME_COL_LEN:].shape)
+  data = np.hstack((gaze_data[:,:DATA_COL_LEN],conf_data[:,:DATA_COL_LEN],gaze_data[:,-TIME_COL_LEN:]))
   i=0
   winsize = 10
   gaze = Dir_check(data,winsize)
