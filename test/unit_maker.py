@@ -11,7 +11,7 @@ def unit_make(data, data_len):
 if __name__ == "__main__":
   from matplotlib import pyplot as plt
   CHECK_ROW = 2
-  data = np.loadtxt('test_data.csv',delimiter=",")
+  data = np.loadtxt('test_mogura.csv',delimiter=",")
   half_data = unit_make(data,500)
   plt.plot(data[:,CHECK_ROW])
   plt.show()
