@@ -1,6 +1,12 @@
 import numpy as np
 import cv2
 
+def min_max(x, axis=None):
+  min = x.min(axis=axis, keepdims=True)
+  max = x.max(axis=axis, keepdims=True)
+  result = (x-min)/(max-min)
+  return result
+
 def unit_make(data, data_len):
   tsize=data.shape[0]
   ysize=data.shape[1]
@@ -25,15 +31,26 @@ def check_time(check_array,target_time):
   
 
 if __name__ == "__main__":
+
+  #imu_data = np.loadtxt('test_imu.csv',delimiter=",")
+  emo_data = np.loadtxt('emotion_test.csv',delimiter=",")
   mogura_data = np.loadtxt('test_mogura_all.csv',delimiter=",")
-  imu_data = np.loadtxt('test_imu.csv',delimiter=",")
+  imu_data = np.loadtxt('imu_test_2.csv',delimiter=",")
+  
 
-  std_st_row = 3129
-  std_en_row = 3799
+  #std_st_row = 3129
+  #std_en_row = 3798
+  std_st_row = 0
+  end_time = emo_data[0,2],emo_data[0,3],emo_data[0,4]
+
+  std_en_row = check_time(imu_data,end_time)
   shape = std_en_row-std_st_row
+  start_time_a = get_time(imu_data,std_st_row)
+  start_time_b = get_time(mogura_data,std_st_row)
+  start_time = max(start_time_a,start_time_b)
+  print(start_time)
 
-  start_time = get_time(imu_data,std_st_row)
-  end_time = get_time(imu_data,std_en_row)
+  #end_time = get_time(imu_data,std_en_row)
   st=check_time(mogura_data,start_time)
   en=check_time(mogura_data,end_time)
   print(st,en)
@@ -44,9 +61,11 @@ if __name__ == "__main__":
 
   CHECK_ROW = 2
 
+  half_data = min_max(half_data)
+  np.savetxt("data.csv",half_data,delimiter=",")
   cv2.imwrite('data.png',(half_data*255).T)
 
-  from matplotlib import pyplot as plt
-  for i in range(8):
-    plt.plot(trim_mog[:,i])
-    plt.show()
+  #from matplotlib import pyplot as plt
+  #for i in range(8):
+  #  plt.plot(trim_mog[:,i])
+  #  plt.show()
