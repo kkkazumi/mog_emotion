@@ -1,9 +1,9 @@
 import numpy as np
 import cv2
 
-filename_label = ['ad_all','imu_all','hap_out','sup_out','ang_out','sad_out','neu_out','gaze_out']
-limit_error = [1000,1000,50000,50000,50000,50000,50000,50000]
-data_col = [8,6,3,3,3,3,3,3]
+filename_label = ['ad_all','imu_all','hap_out','sup_out','ang_out','sad_out','neu_out','gaze_out','head_pose_polate']
+limit_error = [1000,1000,50000,50000,50000,50000,50000,50000,50000]
+data_col = [8,6,3,3,3,3,3,3,3]
 
 def min_max(x, axis=None):
   min = x.min(axis=axis, keepdims=True)
@@ -48,7 +48,6 @@ class Data:
 
   def check_start(self):
     START_ROW = 1
-    #start_time_cand = check_time(self.data,START_ROW)
     start_time_cand= get_time(self.data,START_ROW)
     
     return start_time_cand
@@ -61,9 +60,10 @@ class Data:
 
   def get_unit(self,start_time,end_time,shape):
     self.set_start_data(start_time,end_time)
-    #shape = self.end_row - self.start_row
+    print('unit2')
+    print('self.data.shape',self.data.shape)
+    print('check row',self.start_row, self.end_row,data_col,self.data_type)
     unit = unit_make(self.data[self.start_row:self.end_row,:data_col[self.data_type]],shape)
-    print(unit.shape)
     return unit
 
 def out_all_data(username):
@@ -75,27 +75,32 @@ def out_all_data(username):
   sad = Data(username,5)
   neu = Data(username,6)
   gaz = Data(username,7)
+  hed = Data(username,8)
 
   start_time = max(mog.check_start(),imu.check_start(),hap.check_start(),
   sup.check_start(),
   ang.check_start(),
   sad.check_start(),
   neu.check_start(),
-  gaz.check_start())
+  gaz.check_start(),
+  hed.check_start())
 
   emo_data = np.loadtxt('./test_csv/emotion_test.csv',delimiter=",")
   for i in range(emo_data.shape[0]):
     end_time = emo_data[0,2],emo_data[0,3],emo_data[0,4]
 
     shape = 1614
+    print('start_time',start_time)
 
+    print('i',i)
     half_data = np.hstack((mog.get_unit(start_time,end_time,shape),imu.get_unit(start_time,end_time,shape),
     hap.get_unit(start_time,end_time,shape),
     sup.get_unit(start_time,end_time,shape),
     ang.get_unit(start_time,end_time,shape),
     sad.get_unit(start_time,end_time,shape),
     neu.get_unit(start_time,end_time,shape),
-    gaz.get_unit(start_time,end_time,shape)))
+    gaz.get_unit(start_time,end_time,shape),
+    hed.get_unit(start_time,end_time,shape)))
 
     np.savetxt(username+'test_class_'+str(i)+'.csv',half_data,delimiter=",")
 
