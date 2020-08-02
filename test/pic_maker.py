@@ -90,9 +90,7 @@ def out_all_data(username):
     end_time = emo_data[0,2],emo_data[0,3],emo_data[0,4]
 
     shape = 1614
-    print('start_time',start_time)
 
-    print('i',i)
     half_data = np.hstack((mog.get_unit(start_time,end_time,shape),imu.get_unit(start_time,end_time,shape),
     hap.get_unit(start_time,end_time,shape),
     sup.get_unit(start_time,end_time,shape),
@@ -102,7 +100,8 @@ def out_all_data(username):
     gaz.get_unit(start_time,end_time,shape),
     hed.get_unit(start_time,end_time,shape)))
 
-    np.savetxt(username+'test_class_'+str(i)+'.csv',half_data,delimiter=",")
+    #np.savetxt(username+'test_class_'+str(i)+'.csv',half_data,delimiter=",")
+    cv2.imwrite('data_test.png',half_data.T)
 
 
 if __name__ == "__main__":
