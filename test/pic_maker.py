@@ -67,23 +67,17 @@ class Data:
     return unit
 
 def out_all_data(username):
-  mog = Data(username,0)
-  imu = Data(username,1)
   hap = Data(username,2)
   sup = Data(username,3)
   ang = Data(username,4)
   sad = Data(username,5)
   neu = Data(username,6)
-  gaz = Data(username,7)
-  hed = Data(username,8)
 
-  start_time = max(mog.check_start(),imu.check_start(),hap.check_start(),
+  start_time = max(hap.check_start(),
   sup.check_start(),
   ang.check_start(),
   sad.check_start(),
-  neu.check_start(),
-  gaz.check_start(),
-  hed.check_start())
+  neu.check_start())
 
   emo_data = np.loadtxt('./test_csv/emotion_test.csv',delimiter=",")
   for i in range(emo_data.shape[0]):
@@ -91,17 +85,14 @@ def out_all_data(username):
 
     shape = 1614
 
-    half_data = np.hstack((mog.get_unit(start_time,end_time,shape),imu.get_unit(start_time,end_time,shape),
-    hap.get_unit(start_time,end_time,shape),
+    half_data = np.hstack((hap.get_unit(start_time,end_time,shape),
     sup.get_unit(start_time,end_time,shape),
     ang.get_unit(start_time,end_time,shape),
     sad.get_unit(start_time,end_time,shape),
-    neu.get_unit(start_time,end_time,shape),
-    gaz.get_unit(start_time,end_time,shape),
-    hed.get_unit(start_time,end_time,shape)))
+    neu.get_unit(start_time,end_time,shape)))
 
     #np.savetxt(username+'test_class_'+str(i)+'.csv',half_data,delimiter=",")
-    cv2.imwrite('data_test.png',half_data.T)
+    cv2.imwrite('face_data_test.png',half_data.T)
 
 
 if __name__ == "__main__":
