@@ -1,4 +1,9 @@
 # test/
+  - main.py
+
+  - pic_maker.py
+
+    - 学習用データを作るプログラム
 
   - lstm_test.py
 
@@ -8,9 +13,16 @@
 
     - 学習したモデルを使って予測するだけのプログラム
 
-  - pic_maker.py
+# how to
 
-    - 学習用データを作るプログラム
+  - python pic_maker.py
+
+    - 情動データファイルを読み込んで、学習用画像を作る。
+
+  - python3 lstm_test.py
+
+    - 
+
 # archive
 
   - unit_maker.py
