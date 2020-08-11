@@ -1,5 +1,6 @@
 import numpy as np
 import cv2
+import pandas as pd
 
 filename_label = ['ad_all','imu_all','hap_out','sup_out','ang_out','sad_out','neu_out','gaze_out','head_pose_polate']
 limit_error = [1000,1000,50000,50000,50000,50000,50000,50000,50000]
@@ -66,6 +67,18 @@ class Data:
     unit = unit_make(self.data[self.start_row:self.end_row,:data_col[self.data_type]],shape)
     return unit
 
+def average(data,size):
+  import matplotlib.pyplot as plt
+  b = np.ones(size)/size
+  moving_average = np.zeros_like(data)
+  for i in range(data.shape[1]):
+    moving_average[:,i] = np.convolve(data[:,i],b,mode='same')
+    plt.plot(data[:,i],label='raw')
+    plt.plot(moving_average[:,i],label='average')
+    plt.legend()
+    #plt.show()
+  return moving_average
+
 def out_all_data(username):
   hap = Data(username,2)
   sup = Data(username,3)
@@ -79,11 +92,19 @@ def out_all_data(username):
   sad.check_start(),
   neu.check_start())
 
-  emo_data = np.loadtxt('./test_csv/emotion_test.csv',delimiter=",")
+  df = pd.read_csv('../emo_questionnaire/'+username+'.csv',header=None)#,delimiter=",",dtype="unicode")
+  #df = pd.read_csv('./test_csv/emotion_test.csv')#,delimiter=",",dtype="unicode")
+  emo_data = np.zeros((df.shape[0],df.shape[1]-1),dtype=np.int)
+  emo_data = df.values[:,:5]
+  emo_type = df.values[:,5]
+  #emo_data = np.zeros_like(df.values[])
+  #emo_data = np.loadtxt('../emo_questionnaire/'+str(username)+'.csv',delimiter=",",dtype="unicode")
   for i in range(emo_data.shape[0]):
-    end_time = emo_data[0,2],emo_data[0,3],emo_data[0,4]
+    print('i',i)
+    end_time = emo_data[i,2],emo_data[i,3],emo_data[i,4]
 
     shape = 1614
+    ave_size = 30
 
     half_data = np.hstack((hap.get_unit(start_time,end_time,shape),
     sup.get_unit(start_time,end_time,shape),
@@ -91,11 +112,12 @@ def out_all_data(username):
     sad.get_unit(start_time,end_time,shape),
     neu.get_unit(start_time,end_time,shape)))
 
+    np.savetxt('./output/face_test_class_'+str(i)+'.csv',average(half_data,ave_size),delimiter=",")
     #np.savetxt(username+'test_class_'+str(i)+'.csv',half_data,delimiter=",")
-    cv2.imwrite('face_data_test.png',half_data.T)
+    cv2.imwrite('./output/face_data_test.png',half_data.T)
 
 
 if __name__ == "__main__":
 
   #import data
-  out_all_data('1107-1')
+  out_all_data('1111-1')
