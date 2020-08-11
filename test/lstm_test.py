@@ -4,39 +4,13 @@ import matplotlib.pyplot as plt
  
 from sklearn.datasets import load_iris
  
-def sin(T=500):
-   x = np.arange(0, 2*T+1)
-   y = np.arange(0, 2*T+1)
-   sin = np.sin(2.0 * np.pi * x / T).reshape(-1, 1)+np.sin(2.0 * np.pi * y / T).reshape(-1, 1)
-
-   return x,y,sin
-
-def ret_sin(x):
-   T=500
-   sin = np.sin(2.0 * np.pi * x / T).reshape(-1, 1)
-   return sin
- 
 if __name__ == "__main__":
 
-  username = '1107-1'
   i=0
 
-  """
-  data_x1 = np.loadtxt(username+'test_class_'+str(i)+'.csv',delimiter=",")
-  emo_data = np.loadtxt('./test_csv/emotion_test.csv',delimiter=",")
-
-  for i in range(emo_data.shape[0]):
-    data_x1 = np.loadtxt(username+'test_class_'+str(i)+'.csv',delimiter=",")
-    data_z1 = np.zeros((data_x1.shape[0],1,1))
-    data_z1[-1,:,:] = 1#emo_data[0,1]
-  """
-
-  data_x0 = np.loadtxt('1107-1test_class_0.csv',delimiter=",")
+  data_x0 = np.loadtxt('./output/face_test_class_0.csv',delimiter=",")
   data_z0 = np.zeros((data_x0.shape[0],1,1))
   data_z0[-1,:,:] = 1#emo_data[0,1]
-
-  #data_x1[:data_x0.shape[0],:] = data_x0
-  #data_z1[:data_x0.shape[0],:] = data_z0
 
   data_x = data_x0
   data_z = data_z0
@@ -76,22 +50,15 @@ if __name__ == "__main__":
   from keras.utils import np_utils
   from keras.optimizers import Adam
 
-#モデル定義
+  #モデル定義
   hidden = 100
   model = Sequential()
 
-  """
-  model.add(Conv2D(32, kernel_size=(3, 3),activation='relu',input_shape=(timesteps,data_dim,1)))
-  model.add(Conv2D(64, (3, 3), activation='relu'))
-  model.add(MaxPooling2D(pool_size=(2, 2)))
-  model.add(Dense(10,activation='softmax'))
-  model.add(LSTM(hidden, input_shape=(10,), stateful=False, return_sequences=False))
-  """
   model.add(LSTM(hidden, input_shape=(timesteps,data_dim), stateful=False, return_sequences=False))
   model.add(Dense(lstm_data_y.shape[1]))
   model.compile(loss="mean_squared_error", optimizer='adam')
 
-#学習
+  #学習
   model.fit(lstm_data_x, lstm_data_y,
            batch_size=32,
            epochs=100,
@@ -99,11 +66,11 @@ if __name__ == "__main__":
            )
   print("ok")
 
-#保存と読み込み
-  model.save("data_comb_test_model.h5")
-  load_model = load_model("sincos_model.h5")
+  #保存と読み込み
+  model.save("./output/data_comb_test_model.h5")
+  #load_model = load_model("./output/sincos_model.h5")
 
-#予測
+  #予測
   lstm_data_y_predict = model.predict(lstm_data_x)
 
   plt.figure()
@@ -113,15 +80,3 @@ if __name__ == "__main__":
   plt.legend()
 
   plt.show()
-
-#再帰予測
-#lstm_data_future = pd.DataFrame(index=range(300), columns=['sin', 'cos'], data=0)
-#lstm_data_future.iloc[:timesteps-1, :] = lstm_data_x[-1, :, :]
-
-#for i in lstm_data_future.index[timesteps-1:]:
-#    x = lstm_data_future.iloc[i-timesteps+1:i, :].values.reshape(1, timesteps-1, -1)
-#    y = model.predict(x)
-#    lstm_data_future.iloc[[i], :] = y
-
-#plt.figure()
-#lstm_data_future.iloc[timesteps:].plot(title='future') 
