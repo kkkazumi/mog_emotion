@@ -4,7 +4,9 @@ import numpy as np
 import matplotlib.pyplot as plt
  
 from sklearn.datasets import load_iris
+from lstm_test import *
  
+'''
 def sin(T=500):
    x = np.arange(0, 2*T+1)
    y = np.arange(0, 2*T+1)
@@ -17,12 +19,7 @@ def ret_sin(x):
    sin = np.sin(2.0 * np.pi * x / T).reshape(-1, 1)
    return sin
  
-if __name__ == "__main__":
- 
-   username = '1110'
-   #データセット作り
-   #data_x, data_y ,data_z = sin()
-   data_x = np.loadtxt('./output/face_test_class_12.csv',delimiter=",")
+   data_x = np.loadtxt('./output/'+username+'_face_test_class_4.csv',delimiter=",")
    #emo_data = np.loadtxt('../test_csv/emotion_test.csv',delimiter=",")
    df = pd.read_csv('../emo_questionnaire/'+username+'.csv',header=None)#,delimiter=",",dtype="unicode")
    emo_data = np.zeros((df.shape[0],df.shape[1]-1),dtype=np.int)
@@ -54,7 +51,9 @@ if __name__ == "__main__":
    lstm_data_y = np.array(lstm_data_y)
    lstm_data_x = lstm_data_x.reshape(lstm_data_x.shape[0],timesteps,-1)
    lstm_data_y = lstm_data_y.reshape(lstm_data_y.shape[0],-1)
+'''
 
+def lstm_predict(model_path,lstm_data_x,lstm_data_y):
    from keras.models import Sequential, load_model
    from keras.layers.core import Dense, Activation
    from keras.layers import BatchNormalization
@@ -62,15 +61,9 @@ if __name__ == "__main__":
    from keras.utils import np_utils
    from keras.optimizers import Adam
    
-   #モデル定義
-   #hidden = 100
-   #model = Sequential()
-   #model.add(LSTM(hidden, input_shape=(timesteps, data_dim), stateful=False, return_sequences=False))
-   #model.add(Dense(lstm_data_y.shape[1]))
-   #model.compile(loss="mean_squared_error", optimizer='adam')
- 
-   #保存と読み込み
-   load_model = load_model("./output/data_comb_test_model.h5")
+   #読み込み
+   load_model = load_model(model_path)
+   #load_model = load_model("./output/"+username+"_model_"+str(emo_num)+".h5")
  
    #予測
    lstm_data_y_predict = load_model.predict(lstm_data_x)
@@ -94,3 +87,13 @@ if __name__ == "__main__":
  
    #plt.figure()
    #lstm_data_future.iloc[timesteps:].plot(title='future') 
+
+if __name__ == "__main__":
+   username = '1107-1'
+   number = 1
+   #データセット作り
+   #data_x, data_y ,data_z = sin()
+   model_path="./output/"+username+"_model_"+str(number)+".h5"
+   lstm_data_x,lstm_data_y=lstm_mkdat(username,number)
+   lstm_predict(model_path,lstm_data_x,lstm_data_y)
+

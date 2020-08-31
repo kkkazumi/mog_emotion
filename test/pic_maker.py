@@ -112,12 +112,12 @@ def out_all_data(username):
     sad.get_unit(start_time,end_time,shape),
     neu.get_unit(start_time,end_time,shape)))
 
-    np.savetxt('./output/face_test_class_'+str(i)+'.csv',average(half_data,ave_size),delimiter=",")
+    np.savetxt('./output/'+username+'_face_test_class_'+str(i)+'.csv',average(half_data,ave_size),delimiter=",")
     #np.savetxt(username+'test_class_'+str(i)+'.csv',half_data,delimiter=",")
-    cv2.imwrite('./output/face_data_test.png',half_data.T)
-
+    cv2.imwrite('./output/'+username+'_face_data_test_'+str(i)+'.png',half_data.T)
+  return i
 
 if __name__ == "__main__":
 
   #import data
-  out_all_data('1111-1')
+  out_all_data('1110')
