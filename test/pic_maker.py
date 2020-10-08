@@ -2,6 +2,8 @@ import numpy as np
 import cv2
 import pandas as pd
 
+import os
+
 filename_label = ['ad_all','imu_all','hap_out','sup_out','ang_out','sad_out','neu_out','gaze_out','head_pose_polate']
 limit_error = [1000,1000,50000,50000,50000,50000,50000,50000,50000]
 data_col = [8,6,3,3,3,3,3,3,3]
@@ -92,29 +94,32 @@ def out_all_data(username):
   sad.check_start(),
   neu.check_start())
 
-  df = pd.read_csv('../emo_questionnaire/'+username+'.csv',header=None)#,delimiter=",",dtype="unicode")
-  #df = pd.read_csv('./test_csv/emotion_test.csv')#,delimiter=",",dtype="unicode")
-  emo_data = np.zeros((df.shape[0],df.shape[1]-1),dtype=np.int)
-  emo_data = df.values[:,:5]
-  emo_type = df.values[:,5]
-  #emo_data = np.zeros_like(df.values[])
-  #emo_data = np.loadtxt('../emo_questionnaire/'+str(username)+'.csv',delimiter=",",dtype="unicode")
-  for i in range(emo_data.shape[0]):
-    print('i',i)
-    end_time = emo_data[i,2],emo_data[i,3],emo_data[i,4]
+  qfile_path = '../emo_questionnaire/'+username+'.csv'
+  i=0
+  if os.path.exists(qfile_path):
+    df = pd.read_csv('../emo_questionnaire/'+username+'.csv',header=None)#,delimiter=",",dtype="unicode")
+    #df = pd.read_csv('./test_csv/emotion_test.csv')#,delimiter=",",dtype="unicode")
+    emo_data = np.zeros((df.shape[0],df.shape[1]-1),dtype=np.int)
+    emo_data = df.values[:,:5]
+    emo_type = df.values[:,5]
+    #emo_data = np.zeros_like(df.values[])
+    #emo_data = np.loadtxt('../emo_questionnaire/'+str(username)+'.csv',delimiter=",",dtype="unicode")
+    for i in range(emo_data.shape[0]):
+      print('i',i)
+      end_time = emo_data[i,2],emo_data[i,3],emo_data[i,4]
 
-    shape = 1614
-    ave_size = 30
+      shape = 1614
+      ave_size = 30
 
-    half_data = np.hstack((hap.get_unit(start_time,end_time,shape),
-    sup.get_unit(start_time,end_time,shape),
-    ang.get_unit(start_time,end_time,shape),
-    sad.get_unit(start_time,end_time,shape),
-    neu.get_unit(start_time,end_time,shape)))
+      half_data = np.hstack((hap.get_unit(start_time,end_time,shape),
+      sup.get_unit(start_time,end_time,shape),
+      ang.get_unit(start_time,end_time,shape),
+      sad.get_unit(start_time,end_time,shape),
+      neu.get_unit(start_time,end_time,shape)))
 
-    np.savetxt('./output/'+username+'_face_test_class_'+str(i)+'.csv',average(half_data,ave_size),delimiter=",")
-    #np.savetxt(username+'test_class_'+str(i)+'.csv',half_data,delimiter=",")
-    cv2.imwrite('./output/'+username+'_face_data_test_'+str(i)+'.png',half_data.T)
+      np.savetxt('./output/'+username+'_face_test_class_'+str(i)+'.csv',average(half_data,ave_size),delimiter=",")
+      #np.savetxt(username+'test_class_'+str(i)+'.csv',half_data,delimiter=",")
+      cv2.imwrite('./output/'+username+'_face_data_test_'+str(i)+'.png',half_data.T)
   return i
 
 if __name__ == "__main__":

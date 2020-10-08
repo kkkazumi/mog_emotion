@@ -14,7 +14,12 @@ file_list = list(p_temp)
 for file_path in sorted(file_list):
   filename = os.path.splitext(os.path.basename(file_path))[0]
   i = file_list.index(file_path)
-  emo_len[i] = out_all_data(filename)
+  print('filename',filename)
+  qfile_path = '../emo_questionnaire/'+filename+'.csv'
+  if os.path.exists(qfile_path):
+    emo_len[i] = out_all_data(filename)
+  else:
+    emo_len[i] = 0
 
 lstm_data = []
 lstm_data_y = []
@@ -22,26 +27,27 @@ lstm_data_y = []
 for target_file_path in sorted(file_list):
   target_filename = os.path.splitext(os.path.basename(target_file_path))[0]
   target_i = file_list.index(target_file_path)
-  for target_emo_num in range(emo_len(target_i)):
+  if emo_len(target_i) is not 0:
+    for target_emo_num in range(emo_len(target_i)):
 
-    for file_path in sorted(file_list):
-      filename = os.path.splitext(os.path.basename(file_path))[0]
-      i = file_list.index(file_path)
-      for emo_num in range(emo_len(i)):
-        data_name = './output/'+filename+'_model_'+str(emo_num)+'.h5'
+      for file_path in sorted(file_list):
+        filename = os.path.splitext(os.path.basename(file_path))[0]
+        i = file_list.index(file_path)
+        for emo_num in range(emo_len(i)):
+          data_name = './output/'+filename+'_model_'+str(emo_num)+'.h5'
 
-        if filename is not target_filename:
-          lstm_data,lstm_data_y=lstm_mkdat(emo_num,lstm_data,lstm_data_y)
-        if filename == target_filename:
-          if emo_num is not target_emo_num:
-            lstm_data_x, lstm_data_y=reshape_dat(lstm_data,lstm_data_y)
-            lstm_learn(lstm_data_x,lstm_data_y,data_name)
-          elif emo_num == target_emo_num:
-            print('skip target',target_filename, target_emo_num)
+          if filename is not target_filename:
+            lstm_data,lstm_data_y=lstm_mkdat(emo_num,lstm_data,lstm_data_y)
+          if filename == target_filename:
+            if emo_num is not target_emo_num:
+              lstm_data_x, lstm_data_y=reshape_dat(lstm_data,lstm_data_y)
+              lstm_learn(lstm_data_x,lstm_data_y,data_name)
+            elif emo_num == target_emo_num:
+              print('skip target',target_filename, target_emo_num)
 
-    lstm_data_x,lstm_data_y=lstm_mkdat(filename,target_emo_num)
-    data_name = './output/'+filename+'_model_'+str(emo_num)+'.h5'
-    lstm_data_x,lstm_data_y = lstm_learn(lstm_data_x,lstm_data_y,data_name)
-    lstm_predict(data_name,lstm_data_x,lstm_data_y)
+      lstm_data_x,lstm_data_y=lstm_mkdat(filename,target_emo_num)
+      data_name = './output/'+filename+'_model_'+str(emo_num)+'.h5'
+      lstm_data_x,lstm_data_y = lstm_learn(lstm_data_x,lstm_data_y,data_name)
+      lstm_predict(data_name,lstm_data_x,lstm_data_y)
 
 #if __name__ == "__main__":
