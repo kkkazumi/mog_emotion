@@ -81,6 +81,36 @@ def average(data,size):
     #plt.show()
   return moving_average
 
+def data2file(data,start_time,end_time,filename,str_part):
+    hap,sup,ang,sad,neu=data
+    shape = 1614
+    ave_size = 30
+    
+    half_data = np.hstack((hap.get_unit(start_time,end_time,shape),
+    sup.get_unit(start_time,end_time,shape),
+    ang.get_unit(start_time,end_time,shape),
+    sad.get_unit(start_time,end_time,shape),
+    neu.get_unit(start_time,end_time,shape)))
+
+    np.savetxt(filename+'_'+str_part+'.csv',average(half_data,ave_size),delimiter=",")
+    #np.savetxt(username+'test_class_'+str(i)+'.csv',half_data,delimiter=",")
+    cv2.imwrite(filename+'_'+str_part+'.png',half_data.T)
+
+def add1sec(before_time):
+    print('before time',before_time)
+    after_time = np.zeros(3)
+
+    after_time[0] = before_time[0]
+    after_time[1] = before_time[1]+1.0
+    after_time[2] = before_time[2]
+    if after_time[1] >= 60:
+      after_time[1] = after_time[1] - 60
+      after_time[0] += 1
+      if after_time[0]>=60:
+        after_time[0] = after_time[0] - 60
+    print('after time',after_time)
+    return after_time[0],after_time[1],after_time[2]
+
 def out_all_data(username):
   hap = Data(username,2)
   sup = Data(username,3)
@@ -96,6 +126,8 @@ def out_all_data(username):
 
   qfile_path = '../emo_questionnaire/'+username+'.csv'
   i=0
+  data = hap,sup,ang,sad,neu
+
   if os.path.exists(qfile_path):
     df = pd.read_csv('../emo_questionnaire/'+username+'.csv',header=None)#,delimiter=",",dtype="unicode")
     #df = pd.read_csv('./test_csv/emotion_test.csv')#,delimiter=",",dtype="unicode")
@@ -108,18 +140,10 @@ def out_all_data(username):
       print('i',i)
       end_time = emo_data[i,2],emo_data[i,3],emo_data[i,4]
 
-      shape = 1614
-      ave_size = 30
+      filename = './output/'+username+'_face_test_class_'+str(i)
+      data2file(data,start_time,end_time,filename,'1st')
+      data2file(data,end_time,add1sec(end_time),filename,'2nd')
 
-      half_data = np.hstack((hap.get_unit(start_time,end_time,shape),
-      sup.get_unit(start_time,end_time,shape),
-      ang.get_unit(start_time,end_time,shape),
-      sad.get_unit(start_time,end_time,shape),
-      neu.get_unit(start_time,end_time,shape)))
-
-      np.savetxt('./output/'+username+'_face_test_class_'+str(i)+'.csv',average(half_data,ave_size),delimiter=",")
-      #np.savetxt(username+'test_class_'+str(i)+'.csv',half_data,delimiter=",")
-      cv2.imwrite('./output/'+username+'_face_data_test_'+str(i)+'.png',half_data.T)
   return i
 
 if __name__ == "__main__":
