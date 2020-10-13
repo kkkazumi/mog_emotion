@@ -3,10 +3,15 @@ import cv2
 import pandas as pd
 
 import os
+import matplotlib.pyplot as plt
 
 filename_label = ['ad_all','imu_all','hap_out','sup_out','ang_out','sad_out','neu_out','gaze_out','head_pose_polate']
 limit_error = [1000,1000,50000,50000,50000,50000,50000,50000,50000]
 data_col = [8,6,3,3,3,3,3,3,3]
+
+def gauss(x,sig):
+  mu = 0
+  return np.exp(-x**2/(2*sig**2))
 
 def min_max(x, axis=None):
   min = x.min(axis=axis, keepdims=True)
@@ -25,6 +30,7 @@ def read_files(user_name,data_type):
 def unit_make(data, data_len):
   tsize=data.shape[0]
   ysize=data.shape[1]
+  data_len = data.shape[0]
   comp_data = cv2.resize(data, (ysize,data_len))
   return comp_data
 
@@ -63,28 +69,30 @@ class Data:
 
   def get_unit(self,start_time,end_time,shape):
     self.set_start_data(start_time,end_time)
-    print('unit2')
-    print('self.data.shape',self.data.shape)
-    print('check row',self.start_row, self.end_row,data_col,self.data_type)
+    #print('unit2')
+    #print('self.data.shape',self.data.shape)
+    #print('check row',self.start_row, self.end_row,data_col,self.data_type)
     unit = unit_make(self.data[self.start_row:self.end_row,:data_col[self.data_type]],shape)
     return unit
 
+#calculating moving average
 def average(data,size):
-  import matplotlib.pyplot as plt
+  #import matplotlib.pyplot as plt
   b = np.ones(size)/size
   moving_average = np.zeros_like(data)
   for i in range(data.shape[1]):
     moving_average[:,i] = np.convolve(data[:,i],b,mode='same')
-    plt.plot(data[:,i],label='raw')
-    plt.plot(moving_average[:,i],label='average')
-    plt.legend()
+    #plt.plot(data[:,i],label='raw')
+    #plt.plot(moving_average[:,i],label='average')
+    #plt.legend()
     #plt.show()
   return moving_average
 
 def data2file(data,start_time,end_time,filename,str_part):
     hap,sup,ang,sad,neu=data
-    shape = 1614
-    ave_size = 30
+    shape = hap.data.shape[0]
+    #print('check shape',shape)
+    ave_size = 5
     
     half_data = np.hstack((hap.get_unit(start_time,end_time,shape),
     sup.get_unit(start_time,end_time,shape),
@@ -97,7 +105,7 @@ def data2file(data,start_time,end_time,filename,str_part):
     cv2.imwrite(filename+'_'+str_part+'.png',half_data.T)
 
 def add1sec(before_time):
-    print('before time',before_time)
+    #print('before time',before_time)
     after_time = np.zeros(3)
 
     after_time[0] = before_time[0]
@@ -108,7 +116,7 @@ def add1sec(before_time):
       after_time[0] += 1
       if after_time[0]>=60:
         after_time[0] = after_time[0] - 60
-    print('after time',after_time)
+    #print('after time',after_time)
     return after_time[0],after_time[1],after_time[2]
 
 def out_all_data(username):
@@ -128,9 +136,11 @@ def out_all_data(username):
   i=0
   data = hap,sup,ang,sad,neu
 
+  output_emo_data = np.zeros(hap.data.shape[0])
+
+  #get emotion data
   if os.path.exists(qfile_path):
     df = pd.read_csv('../emo_questionnaire/'+username+'.csv',header=None)#,delimiter=",",dtype="unicode")
-    #df = pd.read_csv('./test_csv/emotion_test.csv')#,delimiter=",",dtype="unicode")
     emo_data = np.zeros((df.shape[0],df.shape[1]-1),dtype=np.int)
     emo_data = df.values[:,:5]
     emo_type = df.values[:,5]
@@ -140,7 +150,16 @@ def out_all_data(username):
       print('i',i)
       end_time = emo_data[i,2],emo_data[i,3],emo_data[i,4]
 
-      filename = './output/'+username+'_face_test_class_'+str(i)
+      centre_row = check_time(hap.data,end_time,limit_error[hap.data_type])
+      sigma = check_time(hap.data,add1sec(end_time),limit_error[hap.data_type])-centre_row
+      print('sigma',sigma)
+      x = np.linspace(-sigma,sigma,sigma*2)
+      yline=gauss(x,sigma/3.0)
+      output_emo_data[centre_row-sigma:centre_row+sigma] = yline
+      plt.plot(output_emo_data)
+      plt.show()
+
+      filename = './output/'+username+'_face_test2_class_'+str(i)
       data2file(data,start_time,end_time,filename,'1st')
       data2file(data,end_time,add1sec(end_time),filename,'2nd')
 
