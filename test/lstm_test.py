@@ -72,10 +72,11 @@ def easy_mkdat(username,number):
   x = np.linspace(-data_x0.shape[0],0,data_x0.shape[0])
   data_z0 = np.zeros((data_x0.shape[0],1,1))
   data_z0[:,0,0] = gauss(x,data_x0.shape[0]/100)
-  return data_z0
+  return x,data_z0[:,0,0]
 
 if __name__ == "__main__":
-  filename = '1107-1'
+  filename = '1110'
+  #filename = '1107-1'
 
   x,yline =easy_mkdat(filename,0)
   plt.plot(x,yline)

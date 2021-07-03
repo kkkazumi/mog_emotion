@@ -1,3 +1,10 @@
+- 21Jul.3
+
+  - find the way to output function of assessed emotion.
+  - ひとまず、アンケートの画像から関数を取り出すことはできた。
+  - 時間軸の調整をしないと。
+
+
 - 21Jul.2
 
   - 思い出し作業を開始・・
