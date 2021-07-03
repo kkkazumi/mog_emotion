@@ -1,6 +1,8 @@
 import numpy as np
 import cv2
 
+DIM_POLY = 20
+
 print("input the name of the figure")
 name = input()
 
@@ -12,24 +14,25 @@ x_max = data.shape[1]
 
 y,x = np.where(data_ud<255)
 
-res20 = np.polyfit(x,y,20)
-#res5 = np.polyfit(x,y,5)
-#res4 = np.polyfit(x,y,4)
-#res3 = np.polyfit(x,y,3)
-y20 = np.poly1d(res20)(x) #<-fitted function
-#y5 = np.poly1d(res5)(x) #<-fitted function
-#y4 = np.poly1d(res4)(x) #<-fitted function
-#y3 = np.poly1d(res3)(x) #<-fitted function
+err = np.empty(DIM_POLY)
+
+for i in range(DIM_POLY):
+  res = np.polyfit(x,y,i)
+  yy = np.poly1d(res)(x)
+  err[i] = np.sum(abs(y-yy))
+
+print(np.argmin(err))
+min_id = np.argmin(err)
+
+res_min = np.polyfit(x,y,min_id)
+y_min = np.poly1d(res_min)(x) #<-fitted function
 
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 
 fig = plt.figure()
 plt.scatter(x,y)
-plt.scatter(x,y20)
-#plt.scatter(x,y5)
-#plt.scatter(x,y4)
-#plt.scatter(x,y3)
+plt.scatter(x,y_min)
 plt.xlim(0,x_max)
 plt.ylim(0,y_max)
 plt.show()
