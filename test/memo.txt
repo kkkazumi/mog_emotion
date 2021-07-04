@@ -1,3 +1,17 @@
+- 21Jul.4
+  - ../graph/get_emo_data.py
+
+    - これを使うと、手書きのグラフを近似します。
+    - 時刻データは後付で与えてください。
+
+  - out_all_data()がやっていることは？
+
+    - start_timeを指定できるようにしたいので、デフォルト引数にしてみる。
+    - also, end_time too.
+
+    - もともと、end_timeは、Emotionデータ（情動）の値が上がった時刻にしていた（４つあれば、４回分出力）
+
+
 - 21Jul.3
 
   - find the way to output function of assessed emotion.

@@ -119,18 +119,19 @@ def add1sec(before_time):
     #print('after time',after_time)
     return after_time[0],after_time[1],after_time[2]
 
-def out_all_data(username):
+def out_all_data(username,start_time=None,end_time = None):
   hap = Data(username,2)
   sup = Data(username,3)
   ang = Data(username,4)
   sad = Data(username,5)
   neu = Data(username,6)
 
-  start_time = max(hap.check_start(),
-  sup.check_start(),
-  ang.check_start(),
-  sad.check_start(),
-  neu.check_start())
+  if(start_time == None):
+    start_time = max(hap.check_start(),
+    sup.check_start(),
+    ang.check_start(),
+    sad.check_start(),
+    neu.check_start())
 
   qfile_path = '../emo_questionnaire/'+username+'.csv'
   i=0
