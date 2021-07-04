@@ -1,7 +1,19 @@
 import numpy as np
 import cv2
 
-DIM_POLY = 20
+
+def ret_func(x,y):
+  DIM_POLY = 20
+  err = np.empty(DIM_POLY)
+  for i in range(DIM_POLY):
+    res = np.polyfit(x,y,i)
+    yy = np.poly1d(res)(x)
+    err[i] = np.sum(abs(y-yy))
+  print(np.argmin(err))
+  min_id = np.argmin(err)
+  res_min = np.polyfit(x,y,min_id)
+  return min_id,res_min
+
 
 print("input the name of the figure")
 name = input()
@@ -14,17 +26,9 @@ x_max = data.shape[1]
 
 y,x = np.where(data_ud<255)
 
-err = np.empty(DIM_POLY)
 
-for i in range(DIM_POLY):
-  res = np.polyfit(x,y,i)
-  yy = np.poly1d(res)(x)
-  err[i] = np.sum(abs(y-yy))
+_,res_min = ret_func(x,y)
 
-print(np.argmin(err))
-min_id = np.argmin(err)
-
-res_min = np.polyfit(x,y,min_id)
 y_min = np.poly1d(res_min)(x) #<-fitted function
 
 import matplotlib as mpl
