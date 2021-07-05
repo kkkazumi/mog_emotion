@@ -5,6 +5,8 @@ import pandas as pd
 import os
 import matplotlib.pyplot as plt
 
+from get_mood_data import *
+
 filename_label = ['ad_all','imu_all','hap_out','sup_out','ang_out','sad_out','neu_out','gaze_out','head_pose_polate']
 limit_error = [1000,1000,50000,50000,50000,50000,50000,50000,50000]
 data_col = [8,6,3,3,3,3,3,3,3]
@@ -20,7 +22,7 @@ def min_max(x, axis=None):
   return result
 
 def read_files(user_name,data_type):
-  data_path="/media/kazumi/4b35d6ed-76bb-41f1-9d5d-197a4ff1a6ab/home/kazumi/mogura/"
+  data_path="/media/kazumi/4b35d6ed-76bb-41f1-9d5d-197a4ff1a6ab/backup/home/kazumi/mogura/"
 
   filename = data_path + user_name + '/' + filename_label[data_type]+'.csv'
   data = np.loadtxt(filename,delimiter=",")
@@ -133,6 +135,9 @@ def out_all_data(username,start_time=None,end_time = None):
     sad.check_start(),
     neu.check_start())
 
+  print("start time",start_time)
+  print("end time",end_time)
+
   qfile_path = '../emo_questionnaire/'+username+'.csv'
   i=0
   data = hap,sup,ang,sad,neu
@@ -147,26 +152,50 @@ def out_all_data(username,start_time=None,end_time = None):
     emo_type = df.values[:,5]
     #emo_data = np.zeros_like(df.values[])
     #emo_data = np.loadtxt('../emo_questionnaire/'+str(username)+'.csv',delimiter=",",dtype="unicode")
-    for i in range(emo_data.shape[0]):
-      print('i',i)
-      end_time = emo_data[i,2],emo_data[i,3],emo_data[i,4]
 
-      centre_row = check_time(hap.data,end_time,limit_error[hap.data_type])
-      sigma = check_time(hap.data,add1sec(end_time),limit_error[hap.data_type])-centre_row
-      print('sigma',sigma)
-      x = np.linspace(-sigma,sigma,sigma*2)
-      yline=gauss(x,sigma/3.0)
-      output_emo_data[centre_row-sigma:centre_row+sigma] = yline
-      plt.plot(output_emo_data)
-      plt.show()
+    if(end_time ==None):
+      for i in range(emo_data.shape[0]):
+        print('i',i)
+        end_time = emo_data[i,2],emo_data[i,3],emo_data[i,4]
 
-      filename = './output/'+username+'_face_test2_class_'+str(i)
-      data2file(data,start_time,end_time,filename,'1st')
-      data2file(data,end_time,add1sec(end_time),filename,'2nd')
+        centre_row = check_time(hap.data,end_time,limit_error[hap.data_type])
+        print("centre_row",centre_row)
 
-  return i
+        sigma = check_time(hap.data,add1sec(end_time),limit_error[hap.data_type])-centre_row
+        print('sigma',sigma)
+        x = np.linspace(-sigma,sigma,sigma*2)
+        yline=gauss(x,sigma/3.0)
+
+        output_emo_data[centre_row-sigma:centre_row+sigma] = yline
+        plt.plot(output_emo_data)
+        plt.show()
+
+    else:
+      filename = "../graph/test/test_"+ username+"_joy.png"
+      x,y=get_mood(filename)
+      _,res=ret_func(x,y)
+      st_row = check_time(hap.data,start_time,limit_error[hap.data_type])
+      en_row = check_time(hap.data,end_time,limit_error[hap.data_type])
+
+      mag = en_row-st_row+1
+
+      y_array = np.poly1d(res)(x)
+      y=np.reshape(y_array,(y_array.shape[0],-1))
+      print("yshape",y.shape,max(y),min(y))
+      yline = np.array(cv2.resize(y,dsize=(1,mag)))
+      resized_mood = yline[:,0]
+
+
+    filename = './output/'+username+'_face_test2_class_'+str(i)
+    data2file(data,start_time,end_time,filename,'1st')
+    data2file(data,end_time,add1sec(end_time),filename,'2nd')
+
+    return i
 
 if __name__ == "__main__":
 
   #import data
-  out_all_data('1110')
+  #out_all_data('1110')
+  s_time = 10,31,600
+  e_time = 11,34,600
+  out_all_data('1111-2',start_time=s_time,end_time=e_time)
