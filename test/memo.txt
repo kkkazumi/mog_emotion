@@ -1,10 +1,21 @@
+- 21Jul.5
+
+  - format of start_time is like this; `target_time = data_min,data_sec,data_msec`
+  - sigma: 情動アンケート結果を出すために、インパルス的な出力を出すときの正規関数の横幅だね。
+    - yline represents the emotion
+
+  - get_mood_data.py; changed the filename and moved here.
+  - ここに移動したよ。あとMoodにした。本当は心的だけど。
+
+  - resized_mood できました。これをOutputデータとして使ってください。もう終わりです。
+
 - 21Jul.4
   - ../graph/get_emo_data.py
 
     - これを使うと、手書きのグラフを近似します。
     - 時刻データは後付で与えてください。
 
-  - out_all_data()がやっていることは？
+  - pic_maker.py/out_all_data()がやっていることは？
 
     - start_timeを指定できるようにしたいので、デフォルト引数にしてみる。
     - also, end_time too.
