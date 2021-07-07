@@ -1,3 +1,25 @@
+- 21Jul.7
+
+  - ひとまず最初にやったら良いコマンド
+
+    - python3 pic_maker.py
+    - これをする前に、125GBボリュームディスクを開いておいて、見えるようにしておいてね。（GUIで。GUI）
+    - 1111-2_face_test2_class_0_1st.png is the sensor data which corresponds with the mood curve data
+    - それで学習してみるだけでしょ！
+
+    - to train the learning machine,
+    - lstm_test.py が何かを思い出すんだ・・。
+
+      - def lstm_mkdat(username,number,lstm_data,lstm_data_y):
+        - lstm_data seems to be input, and lstm_data_y could be output
+
+    - pic_maker.pyの正式なデータサイズを取得してから、Resized_mooodのサイズを決定するという順番にした。
+    - これだと、Emotionの推定には使えなくなるんですが・・
+
+    - lstm_test.py に載ってるファイル名も、変えてしまってる。Moodにしてるからいっか。とりあえず。これがよくない。
+
+
+    
 - 21Jul.5
 
   - format of start_time is like this; `target_time = data_min,data_sec,data_msec`
