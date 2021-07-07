@@ -5,6 +5,26 @@ import matplotlib.pyplot as plt
 from sklearn.datasets import load_iris
 
 timesteps = 100
+def lstm_mood_mkdat(username,number,lstm_data,lstm_data_y):
+  data_x = np.loadtxt('./output/'+username+'_face_test2_class_'+str(number)+'_1st.csv',delimiter=",")
+  data_z = np.loadtxt('test_resized_mood.csv',delimiter=",")
+
+  #data_x = data_x0
+  #data_z = data_z0
+
+  length=data_x.shape[0]
+  data_dim = data_x.shape[1]
+  print("data_dim",data_dim)
+  print("mood dim",data_x.shape[0],data_z.shape[0])
+
+  for i in range(length-2*timesteps,length-timesteps):
+    lstm_data.append(data_x[i:i+timesteps])
+    lstm_data_y.append(data_z[i+timesteps])
+  print("last i ",i)
+
+  return lstm_data, lstm_data_y
+
+
  
 def lstm_mkdat(username,number,lstm_data,lstm_data_y):
   data_x0 = np.loadtxt('./output/'+username+'_face_test_class_'+str(number)+'.csv',delimiter=",")
@@ -75,16 +95,28 @@ def easy_mkdat(username,number):
   return x,data_z0[:,0,0]
 
 if __name__ == "__main__":
-  filename = '1110'
+  #filename = '1110'
   #filename = '1107-1'
+  filename = '1111-2'
+  #out_all_data('1111-2',start_time=s_time,end_time=e_time)
 
-  x,yline =easy_mkdat(filename,0)
-  plt.plot(x,yline)
-  plt.show()
+  #x,yline =easy_mkdat(filename,0)
+  #plt.plot(x,yline)
+  #plt.show()
 
+  lstm_data =[]
+  lstm_data_y=[]
+
+  x,y=lstm_mood_mkdat(filename,0,lstm_data,lstm_data_y)
+  for_lstm_x,for_lstm_y= reshape_dat(x,y)
+  test_output_savedata = "test_resized_mood_estimated.h5"
+  lstm_learn(for_lstm_x,for_lstm_y,test_output_savedata)
   
+  """
+  just comment out to change the mode of this program from emotion to mood
   for i in range(3):
     lstm_data,lstm_data_y=lstm_mkdat(filename,i)
     lstm_data_x, lstm_data_y=reshape_dat(lstm_data,lstm_data_y)
     data_name = './output/'+filename+'_model_'+str(i)+'.h5'
     lstm_learn(lstm_data_x,lstm_data_y,data_name)
+  """
