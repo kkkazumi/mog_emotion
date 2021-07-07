@@ -3,7 +3,6 @@ import numpy as np
 
 import matplotlib.pyplot as plt
  
-from sklearn.datasets import load_iris
 from lstm_test import *
  
 '''
@@ -89,11 +88,19 @@ def lstm_predict(model_path,lstm_data_x,lstm_data_y):
    #lstm_data_future.iloc[timesteps:].plot(title='future') 
 
 if __name__ == "__main__":
-   username = '1107-1'
-   number = 1
-   #データセット作り
-   #data_x, data_y ,data_z = sin()
-   model_path="./output/"+username+"_model_"+str(number)+".h5"
-   lstm_data_x,lstm_data_y=lstm_mkdat(username,number)
-   lstm_predict(model_path,lstm_data_x,lstm_data_y)
+   username = '1111-2'
+   number = 0
+
+   lstm_data =[]
+   lstm_data_y=[]
+
+   #testdata maker
+   #model_path="./output/"+username+"_model_"+str(number)+".h5"
+   test_output_savedata = "test_resized_mood_estimated.h5"
+   model_path = test_output_savedata
+
+   lstm_data_x,lstm_data_y=lstm_mood_mkdat(username,number,lstm_data,lstm_data_y)
+   x,y = reshape_dat(lstm_data_x,lstm_data_y)
+
+   lstm_predict(model_path,x,y)
 
