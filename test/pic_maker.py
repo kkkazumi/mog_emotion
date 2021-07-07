@@ -105,6 +105,7 @@ def data2file(data,start_time,end_time,filename,str_part):
     np.savetxt(filename+'_'+str_part+'.csv',average(half_data,ave_size),delimiter=",")
     #np.savetxt(username+'test_class_'+str(i)+'.csv',half_data,delimiter=",")
     cv2.imwrite(filename+'_'+str_part+'.png',half_data.T)
+    return half_data.shape
 
 def add1sec(before_time):
     #print('before time',before_time)
@@ -153,6 +154,9 @@ def out_all_data(username,start_time=None,end_time = None):
     #emo_data = np.zeros_like(df.values[])
     #emo_data = np.loadtxt('../emo_questionnaire/'+str(username)+'.csv',delimiter=",",dtype="unicode")
 
+    filename = './output/'+username+'_face_test2_class_'+str(i)
+    sensor_len = data2file(data,start_time,end_time,filename,'1st')
+
     if(end_time ==None):
       for i in range(emo_data.shape[0]):
         print('i',i)
@@ -177,18 +181,18 @@ def out_all_data(username,start_time=None,end_time = None):
       st_row = check_time(hap.data,start_time,limit_error[hap.data_type])
       en_row = check_time(hap.data,end_time,limit_error[hap.data_type])
 
-      mag = en_row-st_row+1
+      print(sensor_len)
+      mag = sensor_len[0]
 
       y_array = np.poly1d(res)(x)
       y=np.reshape(y_array,(y_array.shape[0],-1))
       print("yshape",y.shape,max(y),min(y))
       yline = np.array(cv2.resize(y,dsize=(1,mag)))
       resized_mood = yline[:,0]
+      print(resized_mood)
+      np.savetxt("test_resized_mood.csv",resized_mood,delimiter=",")
 
-
-    filename = './output/'+username+'_face_test2_class_'+str(i)
-    data2file(data,start_time,end_time,filename,'1st')
-    data2file(data,end_time,add1sec(end_time),filename,'2nd')
+    #data2file(data,end_time,add1sec(end_time),filename,'2nd')
 
     return i
 
