@@ -3,6 +3,8 @@
     - python3 pic_maker.py
     - これをする前に、125GBボリュームディスクを開いておいて、見えるようにしておいてね。（GUIで。GUI）
 
+  - あせりはきんもつ
+
 - 21Jul.8
 
   - timestep = 100として、100個の前データから次の１点（？！）を予測するデータセットにしてみました。次の１点ってどう？でも、なよなよになるだろうから、あまり気にせずにやってみよう。
@@ -21,6 +23,13 @@
 
   - get_mood.py は、画像を回転する必要があったので、修正しました。
   - imu, ad dataを読み込むようにPic_maker.pyを変更しました。
+
+  - next TODO
+
+    - gaze and headpose のデータを読み込むように。
+    - min,max listを使ってデータ生成（もう一度）
+    - python3 pic_maker.py
+    - python3 lstm_test.py
 
 - 21Jul.7
 
