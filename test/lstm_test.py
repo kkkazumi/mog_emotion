@@ -2,34 +2,38 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
  
-from sklearn.datasets import load_iris
+from sklearn.preprocessing import MinMaxScaler
+
 
 timesteps = 100
-predict_length = 50
+EPOCH = 10
+#predict_length = 50
+
 def lstm_mood_mkdat(username,number,lstm_data,lstm_data_y):
   data_x = np.loadtxt('./output/'+username+'_face_test2_class_'+str(number)+'_1st.csv',delimiter=",")
 
-  z = np.loadtxt('test_resized_mood.csv',delimiter=",")
-  print("xandz's shape",data_x.shape,z.shape)
-  data_z = np.hstack((data_x,z))
-  print("data_z.shape",data_z.shape)
-  input()
+  zz = np.loadtxt('test_resized_mood.csv',delimiter=",")
+  z=np.reshape(zz,(zz.shape[0],-1))
+  #last part of data_x is also included as the predicted target data
+  _z = np.hstack((data_x,z))
+  data_z = np.zeros_like(_z)
+  data_z[:,-1] = zz
+  data_z[:-timesteps,:-1] = data_x[timesteps:,:]
 
   length=data_x.shape[0]
   data_dim = data_x.shape[1]
-  print("data_dim",data_dim)
-  print("mood dim",data_x.shape[0],data_z.shape[0])
+  #print("data_dim",data_dim)
+  #print("mood dim",data_x.shape[0],data_z.shape[0])
 
   #for i in range(length-2*timesteps,length-timesteps):
-  for i in range(length-timesteps-predict_length):
+  #for i in range(length-timesteps-predict_length):
+  for i in range(length-timesteps):
     lstm_data.append(data_x[i:i+timesteps])
-    lstm_data_y.append(data_z[i+timesteps+predict_length])
+    lstm_data_y.append(data_z[i+timesteps])
   print("last i ",i)
 
   return lstm_data, lstm_data_y
 
-
- 
 def lstm_mkdat(username,number,lstm_data,lstm_data_y):
   data_x0 = np.loadtxt('./output/'+username+'_face_test_class_'+str(number)+'.csv',delimiter=",")
   data_z0 = np.zeros((data_x0.shape[0],1,1))
@@ -79,7 +83,7 @@ def lstm_learn(lstm_data_x,lstm_data_y,data_name):
   #learning
   model.fit(lstm_data_x, lstm_data_y,
            batch_size=32,
-           epochs=1,
+           epochs=EPOCH,
            validation_split=0.1,
            )
   print("ok")
