@@ -34,6 +34,7 @@ def unit_make(data, data_len):
   ysize=data.shape[1]
   #data_len = data.shape[0]
   comp_data = cv2.resize(data, (ysize,data_len))
+  print("unit make")
   return comp_data
 
 def get_time(data_array,target_row):
@@ -85,6 +86,7 @@ def average(data,size):
 def data2file(data,start_time,end_time,filename,str_part):
     hap,sup,ang,sad,neu,ad,imu=data
     shape = hap.data.shape[0]
+    #print('check shape',shape)
     ave_size = 5
     
     half_data = np.hstack((hap.get_unit(start_time,end_time,shape),
@@ -187,9 +189,10 @@ def out_all_data(username,start_time=None,end_time = None):
       y_array = np.poly1d(res)(x)
       y=np.reshape(y_array,(y_array.shape[0],-1))
       print("yshape",y.shape,max(y),min(y))
-      yline = np.array(cv2.resize(y,dsize=(1,mag)))
+      yy = np.array(cv2.resize(y,dsize=(1,mag)))
+      yline=cv2.flip(yy, 0)
       resized_mood = yline[:,0]
-      print(resized_mood)
+
       np.savetxt("test_resized_mood.csv",resized_mood,delimiter=",")
 
     #data2file(data,end_time,add1sec(end_time),filename,'2nd')
