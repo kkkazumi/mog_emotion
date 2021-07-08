@@ -101,6 +101,11 @@ if __name__ == "__main__":
 
    lstm_data_x,lstm_data_y=lstm_mood_mkdat(username,number,lstm_data,lstm_data_y)
    x,y = reshape_dat(lstm_data_x,lstm_data_y)
+   xx=np.array(x)
+   print(xx.shape)
+   #print("x",len(x),len(x[0]),len(x[0][0]))
+   #print("y",len(y),y)
+   input()
 
    lstm_predict(model_path,x,y)
 
