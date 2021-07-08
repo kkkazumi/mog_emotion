@@ -1,9 +1,19 @@
+
+  - ひとまず最初にやったら良いコマンド
+    - python3 pic_maker.py
+    - これをする前に、125GBボリュームディスクを開いておいて、見えるようにしておいてね。（GUIで。GUI）
+
+
+- 21Jul.8
+
+  - 
+
 - 21Jul.7
 
   - ひとまず最初にやったら良いコマンド
-
     - python3 pic_maker.py
     - これをする前に、125GBボリュームディスクを開いておいて、見えるようにしておいてね。（GUIで。GUI）
+
     - 1111-2_face_test2_class_0_1st.png is the sensor data which corresponds with the mood curve data
     - それで学習してみるだけでしょ！
 
