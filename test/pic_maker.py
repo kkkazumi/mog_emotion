@@ -32,7 +32,7 @@ def read_files(user_name,data_type):
 def unit_make(data, data_len):
   tsize=data.shape[0]
   ysize=data.shape[1]
-  data_len = data.shape[0]
+  #data_len = data.shape[0]
   comp_data = cv2.resize(data, (ysize,data_len))
   return comp_data
 
@@ -71,37 +71,31 @@ class Data:
 
   def get_unit(self,start_time,end_time,shape):
     self.set_start_data(start_time,end_time)
-    #print('unit2')
-    #print('self.data.shape',self.data.shape)
-    #print('check row',self.start_row, self.end_row,data_col,self.data_type)
     unit = unit_make(self.data[self.start_row:self.end_row,:data_col[self.data_type]],shape)
     return unit
 
-#calculating moving average
 def average(data,size):
   #import matplotlib.pyplot as plt
   b = np.ones(size)/size
   moving_average = np.zeros_like(data)
   for i in range(data.shape[1]):
     moving_average[:,i] = np.convolve(data[:,i],b,mode='same')
-    #plt.plot(data[:,i],label='raw')
-    #plt.plot(moving_average[:,i],label='average')
-    #plt.legend()
-    #plt.show()
   return moving_average
 
 def data2file(data,start_time,end_time,filename,str_part):
-    hap,sup,ang,sad,neu=data
+    hap,sup,ang,sad,neu,ad,imu=data
     shape = hap.data.shape[0]
-    #print('check shape',shape)
     ave_size = 5
     
     half_data = np.hstack((hap.get_unit(start_time,end_time,shape),
     sup.get_unit(start_time,end_time,shape),
     ang.get_unit(start_time,end_time,shape),
     sad.get_unit(start_time,end_time,shape),
-    neu.get_unit(start_time,end_time,shape)))
+    neu.get_unit(start_time,end_time,shape),
+    ad.get_unit(start_time,end_time,shape),
+    imu.get_unit(start_time,end_time,shape)))
 
+    print("end all of get unit")
     np.savetxt(filename+'_'+str_part+'.csv',average(half_data,ave_size),delimiter=",")
     #np.savetxt(username+'test_class_'+str(i)+'.csv',half_data,delimiter=",")
     cv2.imwrite(filename+'_'+str_part+'.png',half_data.T)
@@ -130,20 +124,24 @@ def out_all_data(username,start_time=None,end_time = None):
   neu = Data(username,6)
 
   #TODO: import here to get mogura/hammer sensors and imu data
+  ad = Data(username,0)#the 2nd arg is data type (refer #filename_label)
+  imu = Data(username,1)#the 2nd arg is data type (refer #filename_label)
 
   if(start_time == None):
     start_time = max(hap.check_start(),
     sup.check_start(),
     ang.check_start(),
     sad.check_start(),
-    neu.check_start())
+    neu.check_start(),
+    ad.check_start(),
+    imu.check_start())
 
   print("start time",start_time)
   print("end time",end_time)
 
   qfile_path = '../emo_questionnaire/'+username+'.csv'
   i=0
-  data = hap,sup,ang,sad,neu
+  data = hap,sup,ang,sad,neu,ad,imu
 
   output_emo_data = np.zeros(hap.data.shape[0])
 
@@ -203,5 +201,5 @@ if __name__ == "__main__":
   #import data
   #out_all_data('1110')
   s_time = 10,31,600
-  e_time = 11,34,600
+  e_time = 11,3,100
   out_all_data('1111-2',start_time=s_time,end_time=e_time)
