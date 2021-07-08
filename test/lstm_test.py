@@ -5,21 +5,25 @@ import matplotlib.pyplot as plt
 from sklearn.datasets import load_iris
 
 timesteps = 100
+predict_length = 50
 def lstm_mood_mkdat(username,number,lstm_data,lstm_data_y):
   data_x = np.loadtxt('./output/'+username+'_face_test2_class_'+str(number)+'_1st.csv',delimiter=",")
-  data_z = np.loadtxt('test_resized_mood.csv',delimiter=",")
 
-  #data_x = data_x0
-  #data_z = data_z0
+  z = np.loadtxt('test_resized_mood.csv',delimiter=",")
+  print("xandz's shape",data_x.shape,z.shape)
+  data_z = np.hstack((data_x,z))
+  print("data_z.shape",data_z.shape)
+  input()
 
   length=data_x.shape[0]
   data_dim = data_x.shape[1]
   print("data_dim",data_dim)
   print("mood dim",data_x.shape[0],data_z.shape[0])
 
-  for i in range(length-2*timesteps,length-timesteps):
+  #for i in range(length-2*timesteps,length-timesteps):
+  for i in range(length-timesteps-predict_length):
     lstm_data.append(data_x[i:i+timesteps])
-    lstm_data_y.append(data_z[i+timesteps])
+    lstm_data_y.append(data_z[i+timesteps+predict_length])
   print("last i ",i)
 
   return lstm_data, lstm_data_y
