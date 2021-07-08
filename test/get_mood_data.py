@@ -22,8 +22,6 @@ def get_mood(name):
   y,x = np.where(data_ud<255)
   return x,y
 
-
-
 if __name__ == "__main__":
 
   print("input the name of the figure")
@@ -41,6 +39,6 @@ if __name__ == "__main__":
   fig = plt.figure()
   plt.scatter(x,y)
   plt.scatter(x,y_min)
-  plt.xlim(0,x_max)
-  plt.ylim(0,y_max)
+  #plt.xlim(0,x_max)
+  #plt.ylim(0,y_max)
   plt.show()
