@@ -11,6 +11,18 @@ filename_label = ['ad_all','imu_all','hap_out','sup_out','ang_out','sad_out','ne
 limit_error = [1000,1000,50000,50000,50000,50000,50000,50000,50000]
 data_col = [8,6,3,3,3,3,3,3,3]
 
+from sklearn.preprocessing import MinMaxScaler
+
+def nomalize(xx,zz):
+  #hap,sup,ang,sad,neu, ad,imu=data
+  min_li = [0,0,0,0,0,0,0,0,0,0,0,0,0,-20,-20,-20,-250,-2500,-1000]
+  max_li = [100,100,100,100,100,3.5,3.5,3.5,3.5,3.5,3.5,3.5,20,20,20,250,2500,1000]
+
+  mnscaler = MinMaxScaler(feature_range=(0,255),copy=True)
+  mnscaler.fit(np.hstack((xx,np.reshape(zz,(xx.shape[0],-1)))))
+  x = mnscaler.transform()
+  return x,z
+
 def gauss(x,sig):
   mu = 0
   return np.exp(-x**2/(2*sig**2))
@@ -125,9 +137,10 @@ def out_all_data(username,start_time=None,end_time = None):
   sad = Data(username,5)
   neu = Data(username,6)
 
-  #TODO: import here to get mogura/hammer sensors and imu data
   ad = Data(username,0)#the 2nd arg is data type (refer #filename_label)
   imu = Data(username,1)#the 2nd arg is data type (refer #filename_label)
+
+  #TODO: add gaze and headpose data..
 
   if(start_time == None):
     start_time = max(hap.check_start(),
