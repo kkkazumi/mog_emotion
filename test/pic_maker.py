@@ -42,11 +42,11 @@ def read_files(user_name,data_type):
   return data
 
 def unit_make(data, data_len):
+  print("unit make data",data.shape)
   tsize=data.shape[0]
   ysize=data.shape[1]
   #data_len = data.shape[0]
   comp_data = cv2.resize(data, (ysize,data_len))
-  print("unit make")
   return comp_data
 
 def get_time(data_array,target_row):
@@ -84,7 +84,9 @@ class Data:
 
   def get_unit(self,start_time,end_time,shape):
     self.set_start_data(start_time,end_time)
+    print("get unit shape",self.start_row,self.end_row,data_col[self.data_type])
     unit = unit_make(self.data[self.start_row:self.end_row,:data_col[self.data_type]],shape)
+    print("get unit",filename_label[self.data_type])
     return unit
 
 def average(data,size):
@@ -95,8 +97,7 @@ def average(data,size):
     moving_average[:,i] = np.convolve(data[:,i],b,mode='same')
   return moving_average
 
-def data2file(data,start_time,end_time,filename,str_part):
-    hap,sup,ang,sad,neu,ad,imu=data
+def data2file(data,start_time,end_time,filename,str_part): hap,sup,ang,sad,neu,ad,imu,gz,hd=data
     shape = hap.data.shape[0]
     #print('check shape',shape)
     ave_size = 5
@@ -107,7 +108,9 @@ def data2file(data,start_time,end_time,filename,str_part):
     sad.get_unit(start_time,end_time,shape),
     neu.get_unit(start_time,end_time,shape),
     ad.get_unit(start_time,end_time,shape),
-    imu.get_unit(start_time,end_time,shape)))
+    imu.get_unit(start_time,end_time,shape),
+    gz.get_unit(start_time,end_time,shape),
+    hd.get_unit(start_time,end_time,shape)))
 
     print("end all of get unit")
     np.savetxt(filename+'_'+str_part+'.csv',average(half_data,ave_size),delimiter=",")
@@ -140,6 +143,10 @@ def out_all_data(username,start_time=None,end_time = None):
   ad = Data(username,0)#the 2nd arg is data type (refer #filename_label)
   imu = Data(username,1)#the 2nd arg is data type (refer #filename_label)
 
+  gz = Data(username,7)
+  hd = Data(username,8)
+
+
   #TODO: add gaze and headpose data..
 
   if(start_time == None):
@@ -149,14 +156,16 @@ def out_all_data(username,start_time=None,end_time = None):
     sad.check_start(),
     neu.check_start(),
     ad.check_start(),
-    imu.check_start())
+    imu.check_start(),
+    gz.check_start(),
+    hd.check_start())
 
   print("start time",start_time)
   print("end time",end_time)
 
   qfile_path = '../emo_questionnaire/'+username+'.csv'
   i=0
-  data = hap,sup,ang,sad,neu,ad,imu
+  data = hap,sup,ang,sad,neu,ad,imu,gz,hd
 
   output_emo_data = np.zeros(hap.data.shape[0])
 
