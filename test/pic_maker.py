@@ -14,9 +14,9 @@ data_col = [8,6,3,3,3,3,3,3,3]
 from sklearn.preprocessing import MinMaxScaler
 
 def nomalize(xx,zz):
-  #hap,sup,ang,sad,neu, ad,imu=data
-  min_li = [0,0,0,0,0,0,0,0,0,0,0,0,0,-20,-20,-20,-250,-2500,-1000]
-  max_li = [100,100,100,100,100,3.5,3.5,3.5,3.5,3.5,3.5,3.5,20,20,20,250,2500,1000]
+#hap,sup,ang,sad,neu, ad(ph1,ph2,ph3,ph4,ph5,ph6,ph7,hammer),imu=data
+  min_li = [0,0,0,0,0,2.7,0,0,0,0,0,0,0,0,-20,-20,-20,-250,-2500,-1000]
+  max_li = [100,100,100,100,100,3.5,0.5,0.6,0.4,0.5,0.6,0.8,3.5,20,20,20,250,2500,1000]
 
   mnscaler = MinMaxScaler(feature_range=(0,255),copy=True)
   mnscaler.fit(np.hstack((xx,np.reshape(zz,(xx.shape[0],-1)))))
