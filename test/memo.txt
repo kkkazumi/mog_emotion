@@ -5,6 +5,14 @@
 
   - あせりはきんもつ
 
+- 21Jul.16
+
+  - time flies.
+  - python3 pic_maker.py still doesnt work because of something wrong.
+
+  - 保存したデータの桁数が違うということだ。問題はそれではなかった。
+
+
 - 21Jul.10
 
 

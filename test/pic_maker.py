@@ -7,8 +7,12 @@ import matplotlib.pyplot as plt
 
 from get_mood_data import *
 
-filename_label = ['ad_all','imu_all','hap_out','sup_out','ang_out','sad_out','neu_out','gaze_out','head_pose_polate']
-limit_error = [1000,1000,50000,50000,50000,50000,50000,50000,50000]
+filename_label = ['ad_all','imu_all','hap_out','sup_out','ang_out',
+                  'sad_out','neu_out','gaze_out','head_pose_pl1','head_pose_pl2',
+                  'head_pose_pl3']
+limit_error = [1000,1000,50000,50000,50000,
+              50000,50000,50000,50000,100000,100000,
+              100000]
 data_col = [8,6,3,3,3,3,3,3,3]
 
 from sklearn.preprocessing import MinMaxScaler
@@ -42,7 +46,7 @@ def read_files(user_name,data_type):
   return data
 
 def unit_make(data, data_len):
-  print("unit make data",data.shape)
+  #print("unit make data",data.shape)
   tsize=data.shape[0]
   ysize=data.shape[1]
   #data_len = data.shape[0]
@@ -59,8 +63,10 @@ def get_time(data_array,target_row):
 def check_time(check_array,target_time,order):
   target_min, target_sec, target_msec = target_time
   data=np.where((check_array[:,-3]==target_min)&(check_array[:,-2]==target_sec)&((check_array[:,-1]>target_msec-order)&(check_array[:,-1]<target_msec+order)))
+  print("in check time and data shape",data)
   _mostmin=np.argmin(abs(check_array[data,-1]-target_msec))
   same_time_row=data[0][_mostmin]
+  #print("check time",same_time_row)
   return same_time_row
 
 
@@ -84,9 +90,9 @@ class Data:
 
   def get_unit(self,start_time,end_time,shape):
     self.set_start_data(start_time,end_time)
-    print("get unit shape",self.start_row,self.end_row,data_col[self.data_type])
+    print("start row,end row",self.start_row,self.end_row,data_col[self.data_type])
     unit = unit_make(self.data[self.start_row:self.end_row,:data_col[self.data_type]],shape)
-    print("get unit",filename_label[self.data_type])
+    print("got unit",filename_label[self.data_type])
     return unit
 
 def average(data,size):
@@ -97,7 +103,8 @@ def average(data,size):
     moving_average[:,i] = np.convolve(data[:,i],b,mode='same')
   return moving_average
 
-def data2file(data,start_time,end_time,filename,str_part): hap,sup,ang,sad,neu,ad,imu,gz,hd=data
+def data2file(data,start_time,end_time,filename,str_part):
+    hap,sup,ang,sad,neu,ad,imu,gz,hd1,hd2,hd3=data
     shape = hap.data.shape[0]
     #print('check shape',shape)
     ave_size = 5
@@ -110,7 +117,9 @@ def data2file(data,start_time,end_time,filename,str_part): hap,sup,ang,sad,neu,a
     ad.get_unit(start_time,end_time,shape),
     imu.get_unit(start_time,end_time,shape),
     gz.get_unit(start_time,end_time,shape),
-    hd.get_unit(start_time,end_time,shape)))
+    hd1.get_unit(start_time,end_time,shape),
+    hd2.get_unit(start_time,end_time,shape),
+    hd3.get_unit(start_time,end_time,shape)))
 
     print("end all of get unit")
     np.savetxt(filename+'_'+str_part+'.csv',average(half_data,ave_size),delimiter=",")
@@ -144,7 +153,9 @@ def out_all_data(username,start_time=None,end_time = None):
   imu = Data(username,1)#the 2nd arg is data type (refer #filename_label)
 
   gz = Data(username,7)
-  hd = Data(username,8)
+  hd1 = Data(username,8)
+  hd2 = Data(username,9)
+  hd3 = Data(username,10)
 
 
   #TODO: add gaze and headpose data..
@@ -158,14 +169,16 @@ def out_all_data(username,start_time=None,end_time = None):
     ad.check_start(),
     imu.check_start(),
     gz.check_start(),
-    hd.check_start())
+    hd1.check_start(),
+    hd2.check_start(),
+    hd3.check_start())
 
   print("start time",start_time)
   print("end time",end_time)
 
   qfile_path = '../emo_questionnaire/'+username+'.csv'
   i=0
-  data = hap,sup,ang,sad,neu,ad,imu,gz,hd
+  data = hap,sup,ang,sad,neu,ad,imu,gz,hd1,hd2,hd3
 
   output_emo_data = np.zeros(hap.data.shape[0])
 
@@ -225,6 +238,6 @@ if __name__ == "__main__":
 
   #import data
   #out_all_data('1110')
-  s_time = 10,31,600
-  e_time = 11,3,100
+  s_time = 10,31,600000
+  e_time = 11,3,100000
   out_all_data('1111-2',start_time=s_time,end_time=e_time)
