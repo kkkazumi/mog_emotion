@@ -5,6 +5,9 @@
 
   - あせりはきんもつ
 
+- 22Jan.15
+  - long time no see. じかんたちすぎ。やります。    
+
 - 21Jul.31
   - Better Action Generator の手順を考えました。
     - 1.センサデータs_iを取得、心的・情動e_iを、h^{-1}()を使って推定し、g(),f()を更新
