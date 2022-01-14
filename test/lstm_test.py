@@ -2,8 +2,6 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
  
-from sklearn.preprocessing import MinMaxScaler
-
 
 timesteps = 100
 EPOCH = 10
@@ -11,8 +9,8 @@ EPOCH = 10
 
 def lstm_mood_mkdat(username,number,lstm_data,lstm_data_y):
   data_x = np.loadtxt('./output/'+username+'_face_test2_class_'+str(number)+'_1st.csv',delimiter=",")
-
   zz = np.loadtxt('test_resized_mood.csv',delimiter=",")
+  
   z=np.reshape(zz,(zz.shape[0],-1))
   #last part of data_x is also included as the predicted target data
   _z = np.hstack((data_x,z))
