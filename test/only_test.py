@@ -22,10 +22,15 @@ def lstm_predict(model_path,lstm_data_x,lstm_data_y):
  
    plt.figure()
 
-   plt.plot(lstm_data_y[-150:, 0], lw=2,label="data")
-   plt.plot(lstm_data_y_predict[-150:, 0], '--', lw=2,label="predict")
+   #plt.plot(lstm_data_y[-150:, 0], lw=2,label="data")
+   #plt.plot(lstm_data_y_predict[-150:, 0], '--', lw=2,label="predict")
+   plt.plot(lstm_data_y, lw=2,label="data")
+   plt.plot(lstm_data_y_predict, '--', lw=2,label="predict")
+
+
    plt.legend()
 
+   #plt.savefig("test.png")
    plt.show()
 
    #再帰予測
@@ -52,8 +57,10 @@ if __name__ == "__main__":
    test_output_savedata = "test_resized_mood_estimated.h5"
    model_path = test_output_savedata
 
-   lstm_data_x,lstm_data_y=lstm_mood_mkdat(username,number,lstm_data,lstm_data_y)
+   #lstm_data_x,lstm_data_y=lstm_mood_mkdat(username,number,lstm_data,lstm_data_y)
+   lstm_data_x,lstm_data_y=lstm_mkdat(username,number,lstm_data,lstm_data_y)
    x,y = reshape_dat(lstm_data_x,lstm_data_y)
+   print(x.shape,y.shape)
 
    lstm_predict(model_path,x,y)
 

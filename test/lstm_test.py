@@ -3,8 +3,8 @@ import numpy as np
 import matplotlib.pyplot as plt
  
 
-timesteps = 100
-EPOCH = 10
+timesteps = 10
+EPOCH = 500
 #predict_length = 50
 
 def lstm_mood_mkdat(username,number,lstm_data,lstm_data_y):
@@ -20,11 +20,7 @@ def lstm_mood_mkdat(username,number,lstm_data,lstm_data_y):
 
   length=data_x.shape[0]
   data_dim = data_x.shape[1]
-  #print("data_dim",data_dim)
-  #print("mood dim",data_x.shape[0],data_z.shape[0])
 
-  #for i in range(length-2*timesteps,length-timesteps):
-  #for i in range(length-timesteps-predict_length):
   for i in range(length-timesteps):
     lstm_data.append(data_x[i:i+timesteps])
     lstm_data_y.append(data_z[i+timesteps])
@@ -33,12 +29,17 @@ def lstm_mood_mkdat(username,number,lstm_data,lstm_data_y):
   return lstm_data, lstm_data_y
 
 def lstm_mkdat(username,number,lstm_data,lstm_data_y):
-  data_x0 = np.loadtxt('./output/'+username+'_face_test_class_'+str(number)+'.csv',delimiter=",")
-  data_z0 = np.zeros((data_x0.shape[0],1,1))
-  data_z0[-1,:,:] = 1#emo_data[0,1]
+  data_x0 = np.loadtxt("simple_dummy_input_0.csv",delimiter=",")
+  data_z0 = np.loadtxt("simple_dummy_output_0.csv",delimiter=",")
+  #do not erase it
+  ####data_x0 = np.loadtxt('./output/'+username+'_face_test_class_'+str(number)+'.csv',delimiter=",")
+  ####data_z0 = np.zeros((data_x0.shape[0],1,1))
+  ####data_z0[-1,:,:] = 1#emo_data[0,1]
 
-  data_x = data_x0
-  data_z = data_z0
+  #data_x = data_x0
+  #data_z = data_z0
+  data_x = data_x0.T
+  data_z = data_z0.T
 
   length=data_x.shape[0]
   data_dim = data_x.shape[1]
@@ -113,7 +114,8 @@ if __name__ == "__main__":
   lstm_data =[]
   lstm_data_y=[]
 
-  x,y=lstm_mood_mkdat(filename,0,lstm_data,lstm_data_y)
+  #x,y=lstm_mood_mkdat(filename,0,lstm_data,lstm_data_y)
+  x,y=lstm_mkdat(filename,0,lstm_data,lstm_data_y)
   for_lstm_x,for_lstm_y= reshape_dat(x,y)
   test_output_savedata = "test_resized_mood_estimated.h5"
   lstm_learn(for_lstm_x,for_lstm_y,test_output_savedata)
