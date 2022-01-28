@@ -9,11 +9,13 @@ from get_mood_data import *
 
 filename_label = ['ad_all','imu_all','hap_out','sup_out','ang_out',
                   'sad_out','neu_out','gaze_out','head_pose_pl1','head_pose_pl2',
-                  'head_pose_pl3']
+                  'head_pose_pl3']#11
 limit_error = [1000,1000,50000,50000,50000,
               50000,50000,50000,50000,100000,100000,
-              100000]
-data_col = [8,6,3,3,3,3,3,3,3]
+              100000]#11
+data_col = [8,6,3,3,3,
+            3,3,3,3,3,
+            3]#11
 
 from sklearn.preprocessing import MinMaxScaler
 
@@ -51,6 +53,7 @@ def unit_make(data, data_len):
   ysize=data.shape[1]
   #data_len = data.shape[0]
   comp_data = cv2.resize(data, (ysize,data_len))
+  print("data compress:",tsize,"to",data_len)
   return comp_data
 
 def get_time(data_array,target_row):
@@ -88,6 +91,11 @@ class Data:
     self.end_row = check_time(self.data,self.end_time,limit_error[self.data_type])
     self.start_row = check_time(self.data,start_time,limit_error[self.data_type])
 
+  def get_size(self,start_time,end_time):
+    self.set_start_data(start_time,end_time)
+    data_size = self.end_row - self.start_row
+    return data_size
+
   def get_unit(self,start_time,end_time,shape):
     self.set_start_data(start_time,end_time)
     print("start row,end row",self.start_row,self.end_row,data_col[self.data_type])
@@ -105,8 +113,21 @@ def average(data,size):
 
 def data2file(data,start_time,end_time,filename,str_part):
     hap,sup,ang,sad,neu,ad,imu,gz,hd1,hd2,hd3=data
-    shape = hap.data.shape[0]
     #print('check shape',shape)
+    shape = min(hap.get_size(start_time,end_time),
+      sup.get_size(start_time,end_time),
+      ang.get_size(start_time,end_time),
+      sad.get_size(start_time,end_time),
+      neu.get_size(start_time,end_time),
+      ad.get_size(start_time,end_time),
+      imu.get_size(start_time,end_time),
+      gz.get_size(start_time,end_time),
+      hd1.get_size(start_time,end_time),
+      hd2.get_size(start_time,end_time),
+      hd3.get_size(start_time,end_time))
+    print("shape",shape)
+    input()
+
     ave_size = 5
     
     half_data = np.hstack((hap.get_unit(start_time,end_time,shape),
@@ -192,6 +213,7 @@ def out_all_data(username,start_time=None,end_time = None):
     #emo_data = np.loadtxt('../emo_questionnaire/'+str(username)+'.csv',delimiter=",",dtype="unicode")
 
     filename = './output/'+username+'_face_test2_class_'+str(i)
+
     sensor_len = data2file(data,start_time,end_time,filename,'1st')
 
     if(end_time ==None):
