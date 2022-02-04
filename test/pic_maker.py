@@ -63,10 +63,15 @@ def get_time(data_array,target_row):
   target_time = data_min,data_sec,data_msec
   return target_time
 
-def check_time(check_array,target_time,order):
+def check_time(check_array,target_time,order,data_index=None):
   target_min, target_sec, target_msec = target_time
+  print(target_msec+order,target_msec-order)
   data=np.where((check_array[:,-3]==target_min)&(check_array[:,-2]==target_sec)&((check_array[:,-1]>target_msec-order)&(check_array[:,-1]<target_msec+order)))
-  print("in check time and data shape",data)
+
+
+  if(data_index is not None):
+    print(filename_label[data_index],"in check time and data shape",data,target_time)
+
   _mostmin=np.argmin(abs(check_array[data,-1]-target_msec))
   same_time_row=data[0][_mostmin]
   #print("check time",same_time_row)
@@ -88,7 +93,7 @@ class Data:
   def set_start_data(self, start_time,end_time):
     self.end_time = end_time[0],end_time[1],end_time[2]
 
-    self.end_row = check_time(self.data,self.end_time,limit_error[self.data_type])
+    self.end_row = check_time(self.data,self.end_time,limit_error[self.data_type],data_index=self.data_type)
     self.start_row = check_time(self.data,start_time,limit_error[self.data_type])
 
   def get_size(self,start_time,end_time):
@@ -113,7 +118,7 @@ def average(data,size):
 
 def data2file(data,start_time,end_time,filename,str_part):
     hap,sup,ang,sad,neu,ad,imu,gz,hd1,hd2,hd3=data
-    #print('check shape',shape)
+    print('check shape')
     shape = min(hap.get_size(start_time,end_time),
       sup.get_size(start_time,end_time),
       ang.get_size(start_time,end_time),
@@ -194,8 +199,9 @@ def out_all_data(username,start_time=None,end_time = None):
     hd2.check_start(),
     hd3.check_start())
 
-  print("start time",start_time)
-  print("end time",end_time)
+    a,b,c=start_time
+    end_time = a, b+1,c
+    print("end time",start_time,end_time)
 
   qfile_path = '../emo_questionnaire/'+username+'.csv'
   i=0
@@ -260,6 +266,7 @@ if __name__ == "__main__":
 
   #import data
   #out_all_data('1110')
-  s_time = 10,31,600000
-  e_time = 11,3,100000
+  s_time = 10,30,0
+  e_time = 10,35,0
+
   out_all_data('1111-2',start_time=s_time,end_time=e_time)
