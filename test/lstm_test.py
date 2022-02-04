@@ -73,7 +73,7 @@ def lstm_learn(lstm_data_x,lstm_data_y,data_name):
   from keras.optimizers import Adam
 
   #define model
-  hidden = 100
+  hidden = 50
   model = Sequential()
   model.add(LSTM(hidden, input_shape=(timesteps,data_dim), stateful=False, return_sequences=False))
   model.add(Dense(lstm_data_y.shape[1]))
