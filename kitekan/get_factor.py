@@ -61,7 +61,8 @@ class DataReader:
 
 def main(username):
 
-    data_type = "photo"
+    data_type = "imu"
+    #data_type = "photo"
     datafile,rate_label=file_pointer.get_filename(username,data_type)
 
     sample_rate = int(config['SAMPLE_RATE'][rate_label])
