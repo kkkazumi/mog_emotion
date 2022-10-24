@@ -5,42 +5,81 @@ MENTAL = "mental"
 EMOTION = "emotion"
 SIGNAL = "signal"
 
-def tmp_func_f(weight,m):
-  m_new = m+weight*1
+def tmp_func_f(weight,f):
+  m_new = np.dot(f,weight)
   return m_new
 
-def get_mental(t,weights,m_before=0):
-  if(t==0):
-    mental=5
+def get_mental(t,weights,factor=0,m_before=0,length="30",mode="dummy"):
+  if(mode=="dummy"):
+    if(t==0):
+      mental=np.array([5])
+    else:
+      mental=np.array([m_before])
+      for i in range(1,length):
+        _m=mental[i-1]+tmp_func_f(weights,factor[i])
+        mental=np.append(mental,_m)
   else:
-    mental=tmp_func_f(weights,m_before)
+    mental=np.array([5])
   return mental
 
-def get_weight(func_type):
-  if(func_type==MENTAL):
-    weights=1
-  elif(func_type==EMOTION):
-    weights=0
-  elif(func_type==SIGNAL):
-    weights=0
+def get_weight(func_type,mode="dummy"):
+  if(mode=="dummy"):
+    if(func_type==MENTAL):
+      weights=(np.random.randint(0,10,5)-5*np.ones(5))/10.0
+    elif(func_type==EMOTION):
+      weights=0
+    elif(func_type==SIGNAL):
+      weights=0
+  else:
+    if(func_type==MENTAL):
+      #weights = np.loadtxt(weight_file)
+      weights=0
+    elif(func_type==EMOTION):
+      weights=0
+    elif(func_type==SIGNAL):
+      weights=0
   return weights
 
-def get_emotion(t):
+def get_emotion(t,func_type,mode="dummy"):
   #tmp emotion
-  emotion=0
+  if(func_type==EMOTION):
+    emotion=0
+  elif(func_type==SIGNAL):
+    emotion=0
   return emotion
 
-def main():
+def get_factors(mode="dummy"):
+  if(mode=="dummy"):
+    factor=dummy_factors()
+  else:
+    factor=0
+  return factor
+
+def main(length,mode):
   t=0
-  m=[]
   w_f=get_weight(MENTAL)
-  m.append(get_mental(t,w_f))
-  factor=dummy_factors()
-  print(factor)
-  while(t<50):
+  mental=get_mental(t,w_f,mode=mode)
+  factor=get_factors(mode)
+
+  j=0
+  while(t<len(factor)):
     t+=1
-    m.append(get_mental(t,w_f,m_before=m[-1]))
-    #if(t>50):
+    j+=1
+    if(t>length):
+      if(j>length/2):
+        f=factor[t-length:t]
+#TODO:1, get signal(dummy mode)
+        add_m=get_mental(t,w_f,f,mental[-1],length=length,mode=mode)
+        mental=np.append(mental,add_m)
+
+#TODO:2, get weights EMOTION,SIGNAL
+#TODO:3, get emotion by EMOTION
+#TODO:4, get emotion by SIGNAL
+
+        j=0
+  print(mental)
 
 if __name__ == '__main__':
-  main()
+  length=30
+  mode="dummy"
+  main(length,mode)
