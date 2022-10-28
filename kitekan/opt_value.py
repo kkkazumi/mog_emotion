@@ -1,16 +1,50 @@
-import scipy.optimize as opt
 import numpy as np
 
-##time
-f = lambda x : 5.0*x[0]**2.0 - 6.0*x[0]*x[1] + 5.0*x[1]**2 - 10.0*x[0] + 6.0*x[1] + 3.0*x[2]
-g = lambda x : np.array( [ 10.0 * x[0] - 6.0 *x[1] -10.0, 10.0 * x[1] - 6.0 *x[0] + 6.0 ] )
 
-out2 = []
-def callback(xk):
-  out2.append(xk)
-  print(xk)
-          
-# initial value
-x = np.array( [-2.5, 0.0,3.0] )
-out2.append(x)
-xx, y, d = opt.fmin_l_bfgs_b(f, x, fprime=g, m=5, iprint=0, epsilon=10.0**(-8), maxiter=20, maxls=1, callback=callback)
+
+def argmax_ndim(arg_array):
+  return np.unravel_index(arg_array.argmax(), arg_array.shape)
+
+def argmin_ndim(arg_array):
+  return np.unravel_index(arg_array.argmin(), arg_array.shape)
+
+def find_grad(step,funcs,args):
+  func_g, func_h = funcs
+  factor, mental, signal = args
+
+  if(len(mental)>1):
+    time_length = len(mental[0])
+    dim=len(mental)
+  else:
+    time_length=len(mental)
+    mental = np.reshape(mental,(-1,time_length))
+    dim=1
+  #print(time_length)
+  err_array = np.zeros((dim,time_length))
+
+  print(mental)
+
+  for t in range(time_length):
+    for i in range(dim):
+      mental[i,t] += step
+      err_array[i,t] = dim*t
+
+  return argmin_ndim(err_array)
+
+
+if __name__ == '__main__':
+  time_len = 10
+  mental_dim = 2
+  step = 0.1
+  args = 0
+
+  f_dummy=np.random.randint(0,10,time_len)
+  s_dummy=np.random.randint(0,10,time_len)
+
+  mental=(np.random.randint(0,10,(mental_dim,time_len))-5*np.ones((mental_dim,time_len)))/10.0
+
+  args = f_dummy,mental,s_dummy
+
+  funcs = argmax_ndim,argmin_ndim
+
+  print(find_grad(step,funcs,args))
