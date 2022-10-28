@@ -14,6 +14,14 @@ SMOOTH_LENGTH = float(config['WINDOW_SIZE']['smoothing_length'])#might be 100
 import matplotlib.pyplot as plt
 #debuggg coco made
 
+def dummy_factors(length=100,dim=5):
+    factors=np.random.randint(0,10,(length,dim))/10.0
+    return factors
+
+def dummy_signals(length=100,dim=4)
+    signals=np.random.randint(0,10,(length,dim))/10.0
+    return signals
+
 class DataReader:
     def __init__(self,filepath,sample_rate):
         self.filepath = filepath
